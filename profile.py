@@ -57,6 +57,7 @@ pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
 pc.defineParameter("dataset_urn", "URN for LDBC SNB Dataset",
         portal.ParameterType.STRING,
         "urn:publicid:IDN+utah.cloudlab.us:ramcloud-pg0+ltdataset+ldbc-snb-sf1000",
+        "urn:publicid:IDN+utah.cloudlab.us:ramcloud-pg0+ltdataset+ldbc-snb-sf1000"
         "Currently the default is the LDBC SNB SF1000 1TB dataset.")
 
 params = pc.bindParameters()
