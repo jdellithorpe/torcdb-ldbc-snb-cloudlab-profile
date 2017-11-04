@@ -54,6 +54,11 @@ pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
         "availability of nodes, visit " +\
         "\"https://www.cloudlab.us/cluster-graphs.php\"")
 
+pc.defineParameter("dataset_urn", "URN for LDBC SNB Dataset",
+        portal.ParameterType.STRING,
+        "urn:publicid:IDN+utah.cloudlab.us:ramcloud-pg0+ltdataset+ldbc-snb-sf1000",
+        "Currently the default is the LDBC SNB SF1000 1TB dataset.")
+
 params = pc.bindParameters()
 
 # Create a Request object to start building the RSpec.
@@ -64,6 +69,13 @@ rclan = request.LAN()
 rclan.best_effort = True
 rclan.vlan_tagging = True
 rclan.link_multiplexing = True
+
+# Create another network with which to attach the long term dataset storing the
+# LDBC SNB dataset(s).
+dslan = request.LAN()
+dslan.best_effort = True
+dslan.vlan_tagging = True
+dslan.link_multiplexing = True
 
 # Setup node names so that existing RAMCloud scripts can be used on the
 # cluster.
@@ -84,6 +96,14 @@ for host in hostnames:
         command="sudo /local/repository/setup.sh %s %s" % \
         (rcnfs_nfs_export_dir, rcXX_backup_dir)))
 
+    if host == "rcmaster":
+        datasetbs = request.RemoteBlockstore("datasetbs", "/mnt/dataset", 
+                "if1")
+        datasetbs.dataset = params.dataset_urn
+        dslan.addInterface(datasetbs.interface)
+        rcmaster_to_dataset_iface = node.addInterface("if2")
+        dslan.addInterface(rcmaster_to_dataset_iface)
+
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_nfs_export_dir)
@@ -95,7 +115,7 @@ for host in hostnames:
         backup_bs = node.Blockstore(host + "backup_bs", rcXX_backup_dir)
         backup_bs.size = "200GB"
 
-    # Add this node to the LAN.
+    # Add this node to the client LAN.
     iface = node.addInterface("if1")
     rclan.addInterface(iface)
 
