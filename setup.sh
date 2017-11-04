@@ -87,9 +87,10 @@ else
 	echo "$rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
 fi
 
-# Make tmux start automatically when logging into rcmaster
+# Do some specific rcmaster setup here
 if [ $(hostname --short) == "rcmaster" ]
 then
+  # Make tmux start automatically when logging into rcmaster
   cat >> etc/profile <<EOM
 
 if [[ -z "\$TMUX" ]] && [ "\$SSH_CONNECTION" != "" ]
@@ -97,11 +98,13 @@ then
   tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 EOM
-fi
+  
+  # Checkout TorcDB and LDBC SNB implementation
+  cd /local
+  git clone https://github.com/PlatformLab/TorcDB.git
+  git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 
-# Checkout and setup RAMCloud on rcmaster
-if [ $(hostname --short) == "rcmaster" ]
-then
+  # Checkout and setup RAMCloud
   cd $SHARED_DIR
   git clone https://github.com/PlatformLab/RAMCloud.git
   cd RAMCloud
