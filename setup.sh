@@ -19,6 +19,8 @@ apt-get update
 apt-get --assume-yes install mosh vim tmux pdsh tree axel
 # NFS
 apt-get --assume-yes install nfs-kernel-server nfs-common
+# Java
+apt-get --assume-yes install openjdk-7-jdk maven
 # cpupower, hugepages, msr-tools (for rdmsr), i7z
 apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
         hugepages cpuset msr-tools i7z
@@ -34,6 +36,7 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
 # Set some environment variables
 cat >> /etc/profile <<EOM
 
+export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-amd64
 export EDITOR=vim
 EOM
 
