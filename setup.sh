@@ -20,7 +20,9 @@ apt-get --assume-yes install mosh vim tmux pdsh tree axel
 # NFS
 apt-get --assume-yes install nfs-kernel-server nfs-common
 # Java
-apt-get --assume-yes install openjdk-8-jdk maven
+wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.rpm
+rpm -ivh jdk-8u151-linux-x64.rpm
+apt-get --assume-yes install maven
 # cpupower, hugepages, msr-tools (for rdmsr), i7z
 apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
         hugepages cpuset msr-tools i7z
@@ -36,7 +38,7 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
 # Set some environment variables
 cat >> /etc/profile <<EOM
 
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_151
 export EDITOR=vim
 EOM
 
@@ -105,14 +107,18 @@ EOM
   # Checkout TorcDB and LDBC SNB implementation
   cd /local
   git clone https://github.com/PlatformLab/TorcDB.git
+  chmod -R g=u TorcDB
   git clone https://github.com/PlatformLab/ldbc-snb-impls.git
+  chmod -R g=u ldbc-snb-impls
 
   # Checkout and setup RAMCloud
   cd $SHARED_DIR
   git clone https://github.com/jdellithorpe/RAMCloud.git
+  chmod -R g=u RAMCloud
   cd RAMCloud
   git submodule update --init --recursive
   ln -s ../../hooks/pre-commit .git/hooks/pre-commit
+  git checkout java-transactions
 
 	# Construct localconfig.py for this cluster setup.
 	cd scripts/
@@ -148,6 +154,9 @@ EOM
   ## Make RAMCloud
   cd ../
   make -j8 DEBUG=no
+
+  cd bindings/java
+  ./gradlew
 fi
 
 # Create backup.log file on each of the rc servers
