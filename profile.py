@@ -88,7 +88,8 @@ rcXX_backup_dir = "/local/rcbackup"
 for host in hostnames:
     node = request.RawPC(host)
     node.hardware_type = params.hardware_type
-    node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
+    node.disk_image = "urn:publicid:IDN+utah.cloudlab.us+image+emulab-ops:UBUNTU14-10-64-OSCNF"
+#    node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
 
     node.addService(pg.Execute(shell="sh", 
         command="sudo /local/repository/setup.sh %s %s" % \
