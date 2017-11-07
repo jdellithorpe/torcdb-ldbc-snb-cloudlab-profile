@@ -20,8 +20,10 @@ apt-get --assume-yes install mosh vim tmux pdsh tree axel
 # NFS
 apt-get --assume-yes install nfs-kernel-server nfs-common
 # Java
-wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.rpm
-rpm -ivh jdk-8u151-linux-x64.rpm
+apt-get install software-properties-common
+add-apt-repository --yes ppa:webupd8team/java
+apt-get update
+apt-get install --assume-yes oracle-java8-installer
 apt-get --assume-yes install maven
 # cpupower, hugepages, msr-tools (for rdmsr), i7z
 apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
@@ -38,7 +40,7 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
 # Set some environment variables
 cat >> /etc/profile <<EOM
 
-export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_151
+export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export EDITOR=vim
 EOM
 
