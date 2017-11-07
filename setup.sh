@@ -20,9 +20,10 @@ apt-get --assume-yes install mosh vim tmux pdsh tree axel
 # NFS
 apt-get --assume-yes install nfs-kernel-server nfs-common
 # Java
-apt-get install software-properties-common
+apt-get install --assume-yes software-properties-common
 add-apt-repository --yes ppa:webupd8team/java
 apt-get update
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
 apt-get install --assume-yes oracle-java8-installer
 apt-get --assume-yes install maven
 # cpupower, hugepages, msr-tools (for rdmsr), i7z
