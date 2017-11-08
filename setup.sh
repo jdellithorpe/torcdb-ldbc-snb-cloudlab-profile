@@ -107,12 +107,14 @@ then
 fi
 EOM
   
-  # Checkout TorcDB and LDBC SNB implementation
+  # Checkout TorcDB and LDBC SNB implementation and driver
   cd /local
   git clone https://github.com/PlatformLab/TorcDB.git
   chmod -R g=u TorcDB
   git clone https://github.com/PlatformLab/ldbc-snb-impls.git
   chmod -R g=u ldbc-snb-impls
+  git clone https://github.com/ldbc/ldbc_snb_driver.git
+  chmod -R g=u ldbc_snb_driver
 
   # Checkout and setup RAMCloud
   cd $SHARED_DIR
@@ -163,10 +165,20 @@ EOM
 
   # Install ramcloud.jar for root and every other user.
   mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
-  for user in $(ls /users/)
-  do
-    su - $user -c 'mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar'
-  done
+
+  # Build TorcDB
+  cd /local/TorcDB
+  mvn install -DskipTests
+
+  # Build the LDBC SNB driver
+  cd /local/ldbc_snb_driver
+  mvn install -DskipTests
+
+  # Build the LDBC SNB implementation for TorcDB
+  cd /local/ldbc-snb-impls
+  mvn install -DskipTests
+  cd snb-interactive-torc
+  mvn compile assembly:single
 fi
 
 # Create backup.log file on each of the rc servers

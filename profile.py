@@ -11,7 +11,6 @@ and setup with a scripts/localconfig.py customized for the instantiated
 experiment. 
 """
 
-
 import re
 
 import geni.aggregate.cloudlab as cloudlab
