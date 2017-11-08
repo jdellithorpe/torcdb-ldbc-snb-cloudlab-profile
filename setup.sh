@@ -160,6 +160,13 @@ EOM
 
   cd bindings/java
   ./gradlew
+
+  # Install ramcloud.jar for root and every other user.
+  mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
+  for user in $(ls /users/)
+  do
+    runuser -l $user -c "mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar"
+  done
 fi
 
 # Create backup.log file on each of the rc servers
