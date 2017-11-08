@@ -165,7 +165,7 @@ EOM
   mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
   for user in $(ls /users/)
   do
-    runuser -l $user -c "mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar"
+    su - $user -c 'mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar'
   done
 fi
 
