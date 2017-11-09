@@ -110,16 +110,12 @@ EOM
   # Checkout TorcDB and LDBC SNB implementation and driver
   cd /local
   git clone https://github.com/PlatformLab/TorcDB.git
-  chmod -R g=u TorcDB
   git clone https://github.com/PlatformLab/ldbc-snb-impls.git
-  chmod -R g=u ldbc-snb-impls
   git clone https://github.com/ldbc/ldbc_snb_driver.git
-  chmod -R g=u ldbc_snb_driver
 
   # Checkout and setup RAMCloud
   cd $SHARED_DIR
   git clone https://github.com/jdellithorpe/RAMCloud.git
-  chmod -R g=u RAMCloud
   cd RAMCloud
   git submodule update --init --recursive
   ln -s ../../hooks/pre-commit .git/hooks/pre-commit
@@ -163,6 +159,10 @@ EOM
   cd bindings/java
   ./gradlew
 
+  # Allow other users to access RAMCloud files
+  cd /shome
+  chmod -R g=u RAMCloud
+
   # Install ramcloud.jar for root and every other user.
   mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
 
@@ -179,6 +179,16 @@ EOM
   mvn install -DskipTests
   cd snb-interactive-torc
   mvn compile assembly:single
+
+  # Allow other users to access the files in these directories.
+  cd /local
+  chmod -R g=u TorcDB
+  chmod -R g=u ldbc-snb-impls
+  chmod -R g=u ldbc_snb_driver
+
+  # Allow other users to access root's installed java packages
+  cd /root
+  chmod -R g=u .m2
 fi
 
 # Create backup.log file on each of the rc servers
