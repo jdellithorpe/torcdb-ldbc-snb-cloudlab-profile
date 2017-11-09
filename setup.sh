@@ -50,6 +50,14 @@ cat >> /etc/ssh/ssh_config <<EOM
     StrictHostKeyChecking no
 EOM
 
+# Set unlimited size for locked-in pages to allow RAMCloud to lock-in as much
+# memory as it wants (to prevent the OS from swapping pages to disk and
+# impairing performance).
+cat >> /etc/security/limits.conf <<EOM
+* soft memlock unlimited
+* hard memlock unlimited
+EOM
+
 # Setup password-less ssh between nodes
 for user in $(ls /users/)
 do
