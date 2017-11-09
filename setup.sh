@@ -195,4 +195,5 @@ fi
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
   > $RC_BACKUP_DIR/backup.log
+  chmod g=u $RC_BACKUP_DIR/backup.log
 fi
