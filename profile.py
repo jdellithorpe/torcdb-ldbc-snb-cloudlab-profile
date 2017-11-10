@@ -112,6 +112,9 @@ for host in hostnames:
         # Ask for a 200GB file system for backups
         backup_bs = node.Blockstore(host + "backup_bs", rcXX_backup_dir)
         backup_bs.size = "200GB"
+        # Add connection to dataset blockstore
+        rcXX_to_dataset_iface = node.addInterface("if2")
+        dslan.addInterface(rcXX_to_dataset_iface)
 
     # Add this node to the client LAN.
     iface = node.addInterface("if1")
