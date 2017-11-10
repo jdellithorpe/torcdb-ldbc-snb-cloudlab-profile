@@ -43,7 +43,7 @@ cat >> /etc/profile <<EOM
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export EDITOR=vim
-export LD_LIBRARY_PATH=/shome/RAMCloud/obj.java-transactions
+export LD_LIBRARY_PATH=$SHARED_DIR/RAMCloud/obj.java-transactions
 EOM
 
 # Disable user prompting for connecting to unseen hosts.
@@ -117,7 +117,7 @@ fi
 EOM
   
   # Checkout TorcDB and LDBC SNB implementation and driver
-  cd /local
+  cd $SHARED_DIR
   git clone https://github.com/PlatformLab/TorcDB.git
   git clone https://github.com/PlatformLab/ldbc-snb-impls.git
   git clone https://github.com/ldbc/ldbc_snb_driver.git
@@ -169,11 +169,11 @@ EOM
   ./gradlew
 
   # Allow other users to access RAMCloud files
-  cd /shome
+  cd $SHARED_DIR
   chmod -R g=u RAMCloud
 
   # Install ramcloud.jar for root and every other user.
-  mvn install:install-file -Dfile=/shome/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
+  mvn install:install-file -Dfile=$SHARED_DIR/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
 
   # Build TorcDB
   cd /local/TorcDB
