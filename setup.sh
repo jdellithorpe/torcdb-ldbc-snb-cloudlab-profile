@@ -43,6 +43,7 @@ cat >> /etc/profile <<EOM
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export EDITOR=vim
+export LD_LIBRARY_PATH=/shome/RAMCloud/obj.java-transactions
 EOM
 
 # Disable user prompting for connecting to unseen hosts.
