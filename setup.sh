@@ -1,10 +1,16 @@
 #!/bin/bash
+# System setup script for installing system-wide software and generally
+# configuring the nodes in the cluster.
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # === Parameters decided by profile.py ===
 # RCNFS partition that will be exported to clients by the NFS server (rcnfs).
 NFS_EXPORT_DIR=$1
 # RC server partition that will be used for RAMCloud backups.
 RC_BACKUP_DIR=$2
+# Account for which maven software should be setup (TorcDB, LDBC SNB Driver, 
+# etc.)
+USERNAME=$3
 
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
@@ -43,7 +49,6 @@ cat >> /etc/profile <<EOM
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export EDITOR=vim
-export LD_LIBRARY_PATH=$SHARED_DIR/RAMCloud/obj.java-transactions
 EOM
 
 # Disable user prompting for connecting to unseen hosts.
@@ -72,8 +77,7 @@ do
 done
 
 # If this server is the RCNFS server, then NFS export the local partition and
-# start the NFS server. Otherwise, wait for the RCNFS server to complete its
-# setup and then mount the partition. 
+# start the NFS server.
 if [ $(hostname --short) == "rcnfs" ]
 then
   # Make the file system rwx by all.
@@ -88,20 +92,37 @@ then
   /etc/init.d/nfs-kernel-server start
 
   # Give it a second to start-up
-  sleep 2
+  sleep 5
 
   > /local/setup-nfs-done
-else
-  # Wait until nfs is properly set up
-  while [ "$(ssh rcnfs "[ -f /local/setup-nfs-done ] && echo 1 || echo 0")" != "1" ]; do
-      sleep 1
-  done
+fi
 
-	# NFS clients setup: use the publicly-routable IP addresses for both the
-  # server and the clients to avoid interference with the experiment.
-	rcnfs_ip=`ssh rcnfs "hostname -i"`
-	mkdir $SHARED_DIR; mount -t nfs4 $rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR
-	echo "$rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+# Wait until nfs is properly set up. 
+while [ "$(ssh rcnfs "[ -f /local/setup-nfs-done ] && echo 1 || echo 0")" != "1" ]; do
+    sleep 1
+done
+
+# NFS clients setup: use the publicly-routable IP addresses for both the
+# server and the clients to avoid interference with the experiment.
+rcnfs_ip=`ssh rcnfs "hostname -i"`
+mkdir $SHARED_DIR; mount -t nfs4 $rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR
+echo "$rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+
+# Move user accounts onto the shared directory. rcmaster is responsible for
+# physically moving user files to shared folder. All other nodes just change
+# the home directory in /etc/passwd. This avoids the problem of all servers
+# trying to move files to the same place at the same time.
+if [ $(hostname --short) == "rcmaster" ]
+then
+  for user in $(ls /users/)
+  do
+    usermod --move-home --home $SHARED_DIR/$user
+  done
+else
+  for user in $(ls /users/)
+  do
+    usermod --home $SHARED_DIR/$user
+  done
 fi
 
 # Do some specific rcmaster setup here
@@ -115,89 +136,6 @@ then
   tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 EOM
-  
-  # Checkout TorcDB and LDBC SNB implementation and driver
-  cd $SHARED_DIR
-  git clone https://github.com/PlatformLab/TorcDB.git
-  git clone https://github.com/PlatformLab/ldbc-snb-impls.git
-  git clone https://github.com/ldbc/ldbc_snb_driver.git
-
-  # Checkout and setup RAMCloud
-  cd $SHARED_DIR
-  git clone https://github.com/jdellithorpe/RAMCloud.git
-  cd RAMCloud
-  git submodule update --init --recursive
-  ln -s ../../hooks/pre-commit .git/hooks/pre-commit
-  git checkout java-transactions
-
-	# Construct localconfig.py for this cluster setup.
-	cd scripts/
-	> localconfig.py
-
-  # Set the backup file location
-  echo "default_disk1 = '-f /local/rcbackup/backup.log'" >> localconfig.py
-	# First, collect rc server names and IPs in the cluster.
-	while read -r ip linkin linkout hostname
-	do 
-		if [[ $hostname =~ ^rc[0-9]+$ ]] 
-		then
-			rcnames=("${rcnames[@]}" "$hostname") 
-		fi 
-	done < /etc/hosts
-  IFS=$'\n' rcnames=($(sort <<<"${rcnames[*]}"))
-  unset IFS
-
-	echo -n "hosts = [" >> localconfig.py
-	for i in $(seq ${#rcnames[@]})
-	do
-    hostname=${rcnames[$(( i - 1 ))]}
-    ipaddress=`getent hosts $hostname | awk '{ print $1 }'`
-    tuplestr="(\"$hostname\", \"$ipaddress\", $i)"
-		if [[ $i == ${#rcnames[@]} ]]
-		then
-			echo "$tuplestr]" >> localconfig.py
-    else 
-			echo -n "$tuplestr, " >> localconfig.py
-		fi
-	done
-
-  ## Make RAMCloud
-  cd ../
-  make -j8 DEBUG=no
-
-  cd bindings/java
-  ./gradlew
-
-  # Allow other users to access RAMCloud files
-  cd $SHARED_DIR
-  chmod -R g=u RAMCloud
-
-  # Install ramcloud.jar for root and every other user.
-  mvn install:install-file -Dfile=$SHARED_DIR/RAMCloud/bindings/java/build/libs/ramcloud.jar -DgroupId=edu.stanford -DartifactId=ramcloud -Dversion=1.0 -Dpackaging=jar
-
-  # Build TorcDB
-  cd /local/TorcDB
-  mvn install -DskipTests
-
-  # Build the LDBC SNB driver
-  cd /local/ldbc_snb_driver
-  mvn install -DskipTests
-
-  # Build the LDBC SNB implementation for TorcDB
-  cd /local/ldbc-snb-impls
-  mvn install -DskipTests
-  cd snb-interactive-torc
-  mvn compile assembly:single
-
-  # Allow other users to access the files in these directories.
-  cd /local
-  chmod -R g=u TorcDB
-  chmod -R g=u ldbc-snb-impls
-  chmod -R g=u ldbc_snb_driver
-
-  # Allow other users to access root's installed java packages
-  cd /root
-  chmod -R g=u .m2
 fi
 
 # Create backup.log file on each of the rc servers
@@ -205,4 +143,11 @@ if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
   > $RC_BACKUP_DIR/backup.log
   chmod g=u $RC_BACKUP_DIR/backup.log
+fi
+
+# Do user-specific setup here only on rcmaster (since user's home folder is on
+# a shared filesystem.
+if [ $(hostname --short) == "rcmaster" ]
+then
+  sudo --login -u $USERNAME "$SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR"
 fi

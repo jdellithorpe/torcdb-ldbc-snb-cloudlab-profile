@@ -11,7 +11,6 @@ and setup with a scripts/localconfig.py customized for the instantiated
 experiment. 
 """
 
-
 import re
 
 import geni.aggregate.cloudlab as cloudlab
@@ -41,6 +40,10 @@ pc.defineParameter("image", "Disk Image",
 pc.defineParameter("hardware_type", "Hardware Type",
                    portal.ParameterType.NODETYPE,
                    hardware_types[0], hardware_types)
+
+pc.defineParameter("username", "Username", 
+        portal.ParameterType.STRING, "",
+        "Username for which all user-specific software will be configured.")
 
 # Default the cluster size to 5 nodes (minimum requires to support a 
 # replication factor of 3 and an independent coordinator). 
@@ -92,8 +95,8 @@ for host in hostnames:
     node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
 
     node.addService(pg.Execute(shell="sh", 
-        command="sudo /local/repository/setup.sh %s %s" % \
-        (rcnfs_nfs_export_dir, rcXX_backup_dir)))
+        command="sudo /local/repository/setup.sh %s %s %s" % \
+        (rcnfs_nfs_export_dir, rcXX_backup_dir, params.username)))
 
     if host == "rcmaster":
         datasetbs = request.RemoteBlockstore("datasetbs", "/mnt/dataset", 
