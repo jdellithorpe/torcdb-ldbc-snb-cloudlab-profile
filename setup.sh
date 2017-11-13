@@ -116,12 +116,12 @@ if [ $(hostname --short) == "rcmaster" ]
 then
   for user in $(ls /users/)
   do
-    usermod --move-home --home $SHARED_DIR/$user
+    usermod --move-home --home $SHARED_DIR/$user $user
   done
 else
   for user in $(ls /users/)
   do
-    usermod --home $SHARED_DIR/$user
+    usermod --home $SHARED_DIR/$user $user
   done
 fi
 
