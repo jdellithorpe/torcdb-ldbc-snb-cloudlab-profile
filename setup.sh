@@ -149,5 +149,5 @@ fi
 # a shared filesystem.
 if [ $(hostname --short) == "rcmaster" ]
 then
-  sudo --login -u $USERNAME "$SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR"
+  sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR
 fi
