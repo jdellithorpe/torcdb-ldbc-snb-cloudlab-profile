@@ -59,13 +59,30 @@ pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
         "availability of nodes, visit " +\
         "\"https://www.cloudlab.us/cluster-graphs.php\"")
 
-pc.defineParameter("dataset_urn", "URN for LDBC SNB Dataset", 
-        portal.ParameterType.STRING, "")
+pc.defineParameter("dataset01_urn", "Dataset 01", 
+        portal.ParameterType.STRING, "", None,
+        "URN for a dataset to be mounted (optional). Datasets are " +\
+        "mounted in /mnt/name-of-dataset")
 
 pc.defineParameter("dataset02_urn", "Dataset 02",
         portal.ParameterType.STRING, "", None,
         "URN for a dataset to be mounted (optional). Datasets are " +\
-        "mounted in /mnt/name-of-dataset");
+        "mounted in /mnt/name-of-dataset")
+
+pc.defineParameter("dataset03_urn", "Dataset 03",
+        portal.ParameterType.STRING, "", None,
+        "URN for a dataset to be mounted (optional). Datasets are " +\
+        "mounted in /mnt/name-of-dataset")
+
+pc.defineParameter("dataset04_urn", "Dataset 04",
+        portal.ParameterType.STRING, "", None,
+        "URN for a dataset to be mounted (optional). Datasets are " +\
+        "mounted in /mnt/name-of-dataset")
+
+pc.defineParameter("dataset05_urn", "Dataset 05",
+        portal.ParameterType.STRING, "", None,
+        "URN for a dataset to be mounted (optional). Datasets are " +\
+        "mounted in /mnt/name-of-dataset")
 
 params = pc.bindParameters()
 
@@ -84,6 +101,21 @@ dslan = request.LAN()
 dslan.best_effort = True
 dslan.vlan_tagging = True
 dslan.link_multiplexing = True
+
+# Create array of the requested datasets
+dataset_urns = [params.dataset01_urn, params.dataset02_urn, params.dataset03_urn,
+        params.dataset04_urn, params.dataset_05_urn]
+
+for i in range(len(dataset_urns)):
+    if dataset_urns[i] != "":
+        dataset_urn = dataset_urns[i]
+        dataset_name = dataset_urn[dataset_urn.rfind("+") + 1:]
+        rbs = request.RemoteBlockstore(
+                dataset_name + "_bs", 
+                "/mnt/" + dataset_name, 
+                "if1")
+        rbs.dataset = dataset_urn
+        dslan.addInterface(rbs.interface)
 
 # Setup node names so that existing RAMCloud scripts can be used on the
 # cluster.
@@ -104,19 +136,12 @@ for host in hostnames:
         command="sudo /local/repository/setup.sh %s %s %s" % \
         (rcnfs_nfs_export_dir, rcXX_backup_dir, params.username)))
 
-    if host == "rcmaster":
-        datasetbs = request.RemoteBlockstore("datasetbs", "/mnt/dataset", 
-                "if1")
-        datasetbs.dataset = params.dataset_urn
-        dslan.addInterface(datasetbs.interface)
-        rcmaster_to_dataset_iface = node.addInterface("if2")
-        dslan.addInterface(rcmaster_to_dataset_iface)
-        dataset02bs = request.RemoteBlockstore("dataset02bs", "/mnt/dataset02", 
-                "if1")
-        dataset02bs.dataset = params.dataset02_urn
-        dslan.addInterface(dataset02bs.interface)
-        
+    # Add this node to the client LAN.
+    rclan.addInterface(node.addInterface("if1"))
 
+    # Add this node to the dataset blockstore LAN.
+    dslan.addInterface(node.addInterface("if2"))
+        
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_nfs_export_dir)
@@ -124,16 +149,10 @@ for host in hostnames:
 
     pattern = re.compile("^rc[0-9][0-9]$")
     if pattern.match(host):
-        # Ask for a 200GB file system for backups
+        # Ask for a 200GB file system for RAMCloud backups
         backup_bs = node.Blockstore(host + "backup_bs", rcXX_backup_dir)
         backup_bs.size = "200GB"
-        # Add connection to dataset blockstore
-        rcXX_to_dataset_iface = node.addInterface("if2")
-        dslan.addInterface(rcXX_to_dataset_iface)
 
-    # Add this node to the client LAN.
-    iface = node.addInterface("if1")
-    rclan.addInterface(iface)
 
 # Generate the RSpec
 pc.printRequestRSpec(request)
