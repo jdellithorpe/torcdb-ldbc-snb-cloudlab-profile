@@ -111,7 +111,7 @@ for i in range(len(dataset_urns)):
         dataset_urn = dataset_urns[i]
         dataset_name = dataset_urn[dataset_urn.rfind("+") + 1:]
         rbs = request.RemoteBlockstore(
-                dataset_name + "_bs", 
+                "dataset%02d" % i, 
                 "/mnt/" + dataset_name, 
                 "if1")
         rbs.dataset = dataset_urn
