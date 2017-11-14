@@ -62,6 +62,11 @@ pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
 pc.defineParameter("dataset_urn", "URN for LDBC SNB Dataset", 
         portal.ParameterType.STRING, "")
 
+pc.defineParameter("dataset02_urn", "Dataset 02",
+        portal.ParameterType.STRING, "", None,
+        "URN for a dataset to be mounted (optional). Datasets are " +\
+        "mounted in /mnt/name-of-dataset");
+
 params = pc.bindParameters()
 
 # Create a Request object to start building the RSpec.
@@ -106,6 +111,11 @@ for host in hostnames:
         dslan.addInterface(datasetbs.interface)
         rcmaster_to_dataset_iface = node.addInterface("if2")
         dslan.addInterface(rcmaster_to_dataset_iface)
+        dataset02bs = request.RemoteBlockstore("dataset02bs", "/mnt/dataset02", 
+                "if1")
+        dataset02bs.dataset = params.dataset02_urn
+        dslan.addInterface(dataset02bs.interface)
+        
 
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
