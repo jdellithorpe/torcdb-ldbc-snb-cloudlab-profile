@@ -104,7 +104,7 @@ dslan.link_multiplexing = True
 
 # Create array of the requested datasets
 dataset_urns = [params.dataset01_urn, params.dataset02_urn, params.dataset03_urn,
-        params.dataset04_urn, params.dataset_05_urn]
+        params.dataset04_urn, params.dataset05_urn]
 
 for i in range(len(dataset_urns)):
     if dataset_urns[i] != "":
