@@ -40,9 +40,9 @@ cd $HOME/RAMCloud/scripts
 echo "default_disk1 = '-f $RC_BACKUP_DIR/backup.log'" >> localconfig.py
 
 # Construct localconfig hosts array
-while read -r ip linkin linkout hostname
+while read -r ip hostname alias1 alias2 alias3
 do 
-  if [[ $hostname =~ ^rc[0-9]+$ ]] 
+  if [[ $hostname =~ ^rc[0-9]+-rclan$ ]] 
   then
     rcnames=("${rcnames[@]}" "$hostname") 
   fi 
