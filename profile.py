@@ -89,14 +89,14 @@ params = pc.bindParameters()
 request = pc.makeRequestRSpec()
 
 # Create a local area network.
-rclan = request.LAN()
+rclan = request.LAN("rcLAN")
 rclan.best_effort = True
 rclan.vlan_tagging = True
 rclan.link_multiplexing = True
 
 # Create another network with which to attach the long term dataset storing the
 # LDBC SNB dataset(s).
-dslan = request.LAN()
+dslan = request.LAN("dsLAN")
 dslan.best_effort = True
 dslan.vlan_tagging = True
 dslan.link_multiplexing = True
