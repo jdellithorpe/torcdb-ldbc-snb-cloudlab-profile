@@ -129,8 +129,8 @@ hostnames = ["rcmaster", "rcnfs"]
 for i in range(params.num_rcnodes):
     hostnames.append("rc%02d" % (i + 1))
 
-rcnfs_nfs_export_dir = "/local/nfs"
-rcXX_backup_dir = "/local/rcbackup"
+rcnfs_sharedhome_export_dir = "/local/nfs"
+rcxx_backup_dir = "/local/rcbackup"
 
 # Setup the cluster one node at a time.
 for host in hostnames:
@@ -140,15 +140,15 @@ for host in hostnames:
 
     node.addService(pg.Execute(shell="sh", 
         command="sudo /local/repository/setup.sh %s %s %s %s" % \
-        (rcnfs_nfs_export_dir, rcXX_backup_dir, params.username,
-            rcnfs_datasets_export_dir)))
+        (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
+        rcxx_backup_dir, params.username)))
 
     # Add this node to the client LAN.
     rclan.addInterface(node.addInterface("if1"))
 
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
-        nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_nfs_export_dir)
+        nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_sharedhome_export_dir)
         nfs_bs.size = "200GB"
         # Add this node to the dataset blockstore LAN.
         dslan.addInterface(node.addInterface("if2"))
@@ -156,9 +156,8 @@ for host in hostnames:
     pattern = re.compile("^rc[0-9][0-9]$")
     if pattern.match(host):
         # Ask for a 200GB file system for RAMCloud backups
-        backup_bs = node.Blockstore(host + "backup_bs", rcXX_backup_dir)
+        backup_bs = node.Blockstore(host + "backup_bs", rcxx_backup_dir)
         backup_bs.size = "200GB"
-
 
 # Generate the RSpec
 pc.printRequestRSpec(request)

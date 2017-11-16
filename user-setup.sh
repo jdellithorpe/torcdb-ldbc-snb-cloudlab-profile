@@ -1,10 +1,11 @@
 #!/bin/bash
-# This script is for setting up software and configuration settings for the
-# invoking user.
+# Script for setting up software development environment for a specific user.
+
+# Get the absolute path of this script on the system.
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # RC server partition that will be used for RAMCloud backups.
-RC_BACKUP_DIR=$1
+RCXX_BACKUP_DIR=$1
 
 # Checkout TorcDB, RAMCloud, and related repositories
 git clone https://github.com/jdellithorpe/RAMCloud.git
@@ -37,7 +38,7 @@ cd $HOME/RAMCloud/scripts
 > localconfig.py
 
 # Set the backup file location
-echo "default_disk1 = '-f $RC_BACKUP_DIR/backup.log'" >> localconfig.py
+echo "default_disk1 = '-f $RCXX_BACKUP_DIR/backup.log'" >> localconfig.py
 
 # Construct localconfig hosts array
 while read -r ip hostname alias1 alias2 alias3

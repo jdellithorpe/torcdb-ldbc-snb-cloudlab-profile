@@ -1,22 +1,27 @@
 #!/bin/bash
-# System setup script for installing system-wide software and generally
-# configuring the nodes in the cluster.
+# Script for setting up the cluster after initial booting and configuration by
+# CloudLab.
+
+# Get the absolute path of this script on the system.
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # === Parameters decided by profile.py ===
-# RCNFS partition that will be exported to clients by the NFS server (rcnfs).
-NFS_EXPORT_DIR=$1
-# RC server partition that will be used for RAMCloud backups.
-RC_BACKUP_DIR=$2
-# Account for which maven software should be setup (TorcDB, LDBC SNB Driver, 
-# etc.)
-USERNAME=$3
-# Place where RCNFS has any remote blockstore datasets mounted
-DATASETS_EXPORT_DIR=$4
+# RCNFS partition that will be exported via NFS and used as a shared home
+# directory for cluster users.
+RCNFS_SHAREDHOME_EXPORT_DIR=$1
+# RCNFS directory where remote blockstore datasets are mounted and exported via
+# NFS to be shared by all nodes in the cluster.
+RCNFS_DATASETS_EXPORT_DIR=$2
+# RCXX partition that will be used for RAMCloud backups.
+RCXX_BACKUP_DIR=$3
+# Account in which various software should be setup.
+USERNAME=$4
 
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
-SHARED_DIR=/shome
+SHAREDHOME_DIR=/shome
+# Directory where NFS shared datasets will be mounted on NFS clients
+DATASETS_DIR=/datasets
 
 # Other variables
 KERNEL_RELEASE=`uname -r`
@@ -46,14 +51,14 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
         libboost-all-dev libgtest-dev libzookeeper-mt-dev zookeeper \
         libssl-dev default-jdk ccache
 
-# Set some environment variables
+# Configure some environment variables for all users.
 cat >> /etc/profile <<EOM
 
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export EDITOR=vim
 EOM
 
-# Disable user prompting for connecting to unseen hosts.
+# Disable user prompting for connecting to new hosts.
 cat >> /etc/ssh/ssh_config <<EOM
     StrictHostKeyChecking no
 EOM
@@ -66,17 +71,22 @@ cat >> /etc/security/limits.conf <<EOM
 * hard memlock unlimited
 EOM
 
-# If this server is the RCNFS server, then NFS export the local partition and
-# start the NFS server.
+# If this server is the RCNFS server, then configure NFS to export the
+# appropriate directories, including RCNFS_SHAREDHOME_EXPORT_DIR (used as a
+# shared home directory for all users), and also RCNFS_DATASETS_EXPORT_DIR
+# (mount point for CloudLab datasets to which cluster nodes need shared
+# access). 
 if [ $(hostname --short) == "rcnfs" ]
 then
   # Make the file system rwx by all.
-  chmod 777 $NFS_EXPORT_DIR
+  chmod 777 $RCNFS_SHAREDHOME_EXPORT_DIR
+  chmod 777 $RCNFS_DATASETS_EXPORT_DIR
 
-  # Make the NFS exported file system readable and writeable by all hosts in the
-  # system (/etc/exports is the access control list for NFS exported file
+  # Make the NFS exported file system readable and writeable by all hosts in
+  # the system (/etc/exports is the access control list for NFS exported file
   # systems, see exports(5) for more information).
-	echo "$NFS_EXPORT_DIR *(rw,sync,no_root_squash)" >> /etc/exports
+	echo "$RCNFS_SHAREDHOME_EXPORT_DIR *(rw,sync,no_root_squash)" >> /etc/exports
+	echo "$RCNFS_DATASETS_EXPORT_DIR *(rw,sync,no_root_squash)" >> /etc/exports
 
   # Start the NFS service.
   /etc/init.d/nfs-kernel-server start
@@ -95,8 +105,11 @@ done
 # NFS clients setup: use the publicly-routable IP addresses for both the
 # server and the clients to avoid interference with the experiment.
 rcnfs_ip=`ssh rcnfs "hostname -i"`
-mkdir $SHARED_DIR; mount -t nfs4 $rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR
-echo "$rcnfs_ip:$NFS_EXPORT_DIR $SHARED_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
+echo "$rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+
+mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
+echo "$rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
 
 # Move user accounts onto the shared directory. rcmaster is responsible for
 # physically moving user files to shared folder. All other nodes just change
@@ -106,21 +119,21 @@ if [ $(hostname --short) == "rcmaster" ]
 then
   for user in $(ls /users/)
   do
-    usermod --move-home --home $SHARED_DIR/$user $user
+    usermod --move-home --home $SHAREDHOME_DIR/$user $user
   done
 else
   for user in $(ls /users/)
   do
-    usermod --home $SHARED_DIR/$user $user
+    usermod --home $SHAREDHOME_DIR/$user $user
   done
 fi
 
 # Setup password-less ssh between nodes
 if [ $(hostname --short) == "rcmaster" ]
 then
-  for user in $(ls $SHARED_DIR)
+  for user in $(ls $SHAREDHOME_DIR)
   do
-      ssh_dir=$SHARED_DIR/$user/.ssh
+      ssh_dir=$SHAREDHOME_DIR/$user/.ssh
       /usr/bin/geni-get key > $ssh_dir/id_rsa
       chmod 600 $ssh_dir/id_rsa
       chown $user: $ssh_dir/id_rsa
@@ -146,13 +159,13 @@ fi
 # Create backup.log file on each of the rc servers
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
-  > $RC_BACKUP_DIR/backup.log
-  chmod g=u $RC_BACKUP_DIR/backup.log
+  > $RCXX_BACKUP_DIR/backup.log
+  chmod g=u $RCXX_BACKUP_DIR/backup.log
 fi
 
 # Do user-specific setup here only on rcmaster (since user's home folder is on
 # a shared filesystem.
-#if [ $(hostname --short) == "rcmaster" ]
-#then
-#  sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR
-#fi
+if [ $(hostname --short) == "rcmaster" ]
+then
+  sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
+fi
