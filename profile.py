@@ -1,14 +1,40 @@
 """
-Allocate a cluster of CloudLab machines for running TorcDB on RAMCloud, 
-specifically on CloudLab Utah m510 machines.
+CloudLab profile for allocating a cluster of machines for running LDBC SNB
+experiments against TorcDB running on RAMCloud. This profile is currently
+written specifically for CloudLab Utah m510 machines, although may be extended
+in the future to work on other hardware types as well. 
+
+Since TorcDB uses RAMCloud as its storage engine, the cluster is setup as a
+RAMCloud cluster. The "rcmaster" node is intended to be used for launching and
+orchestrating RAMCloud instances and LDBC SNB workloads, and the "rcnfs" node
+supports an NFS shared home directory for all users at /shome. The "rcnfs" node
+also exports access to any CloudLab datasets that were specified at
+configuration time. These datasets are mounted on /mnt/$dataset-name on all
+nodes in the cluster. Lastly, the "rcXX" machines are intended for running
+RAMCloud instances, workload clients, etc. 
+
+During configuration, the user must specify their username as a parameter. All
+software, including RAMCloud, TorcDB, and LDBC SNB are downloaded, compiled,
+and configured for that specific user in their home directory. This is for the
+user's convenience (versus installing all software system-wide), as this likely
+matches the environment one would have when working in their own clusters. It's
+also for experiment instantiation speed, since installing software for all
+users would take too long and generally not needed.
 
 Instructions:
-All machines will share an nfs filesystem mounted at /shome. This filesystem
-is exported by a special node called `rcnfs'.
+To startup a RAMCloud cluster:
+1) SSH into the "rcmaster" node.
+2) First run `/local/repository/cluster-health-check.sh` to see if there are
+   any problematic nodes in the cluster. If there are, jot these down.
+3) cd ~/RAMCloud
+4) If there are any failing nodes, open up `./scripts/localconfig.py` and
+   remove those nodes from the `hosts` array.
+5) Start up a RAMCloud cluster with whatever configuration parameters you
+   desire. Here's an example for a cluster of 8 servers running basic+udp
+   transport.
+./scripts/cluster.py -s 8 -r 3 --transport=basic+udp --masterArgs="--totalMasterMemory 50000 --segmentFrames 20000" --verbose --shareHosts
 
-The RAMCloud repository is automatically cloned to /shome/RAMCloud, compiled,
-and setup with a scripts/localconfig.py customized for the instantiated
-experiment. 
+TODO: Add instructions for running TorcDB and LDBC SNB.
 """
 
 import re
