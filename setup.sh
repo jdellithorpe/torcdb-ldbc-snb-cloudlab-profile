@@ -11,6 +11,8 @@ RC_BACKUP_DIR=$2
 # Account for which maven software should be setup (TorcDB, LDBC SNB Driver, 
 # etc.)
 USERNAME=$3
+# Place where RCNFS has any remote blockstore datasets mounted
+DATASETS_EXPORT_DIR=$4
 
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
@@ -150,7 +152,7 @@ fi
 
 # Do user-specific setup here only on rcmaster (since user's home folder is on
 # a shared filesystem.
-if [ $(hostname --short) == "rcmaster" ]
-then
-  sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR
-fi
+#if [ $(hostname --short) == "rcmaster" ]
+#then
+#  sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RC_BACKUP_DIR
+#fi
