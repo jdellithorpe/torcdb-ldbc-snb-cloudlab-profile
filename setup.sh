@@ -22,7 +22,7 @@ KERNEL_RELEASE=`uname -r`
 # === Software dependencies that need to be installed. ===
 # Common utilities
 apt-get update
-apt-get --assume-yes install mosh vim tmux pdsh tree axel htop
+apt-get --assume-yes install mosh vim tmux pdsh tree axel htop ctags
 # NFS
 apt-get --assume-yes install nfs-kernel-server nfs-common
 # Java
