@@ -106,9 +106,8 @@ while [ "$(ssh rcnfs "[ -f /local/setup-nfs-done ] && echo 1 || echo 0")" != "1"
     sleep 1
 done
 
-# NFS clients setup: use the publicly-routable IP addresses for both the
-# server and the clients to avoid interference with the experiment.
-rcnfs_ip=`ssh rcnfs "hostname -i"`
+# NFS clients setup
+rcnfs_ip=`grep "rcnfs-rclan" | cut -d' ' -f1`
 mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
 echo "$rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
 
