@@ -38,7 +38,15 @@ add-apt-repository --yes ppa:webupd8team/java
 apt-get update
 echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
 apt-get install --assume-yes oracle-java8-installer
-apt-get --assume-yes install maven
+# Maven
+wget http://www-us.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
+tar -xvzf apache-maven-3.5.2-bin.tar.gz
+mv apache-maven-3.5.2 /usr/lib
+
+cat >> /etc/profile.d/maven.sh <<EOM
+export PATH=/usr/lib/apache-maven-3.5.2/bin:$PATH
+EOM
+chmod ugo+x /etc/profile.d/maven.sh
 # cpupower, hugepages, msr-tools (for rdmsr), i7z
 apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
         hugepages cpuset msr-tools i7z
@@ -51,12 +59,13 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
         libboost-all-dev libgtest-dev libzookeeper-mt-dev zookeeper \
         libssl-dev default-jdk ccache
 
-# Configure some environment variables for all users.
-cat >> /etc/profile <<EOM
 
-export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+# Configure some environment variables and settings for all users on all
+# machines.
+cat >> /etc/profile.d/etc.sh <<EOM
 export EDITOR=vim
 EOM
+chmod ugo+x /etc/profile.d/etc.sh
 
 # Disable user prompting for connecting to new hosts.
 cat >> /etc/ssh/ssh_config <<EOM
@@ -151,7 +160,7 @@ fi
 if [ $(hostname --short) == "rcmaster" ]
 then
   # Make tmux start automatically when logging into rcmaster
-  cat >> etc/profile <<EOM
+  cat >> /etc/profile.d/etc.sh <<EOM
 
 if [[ -z "\$TMUX" ]] && [ "\$SSH_CONNECTION" != "" ]
 then
