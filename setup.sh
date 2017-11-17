@@ -87,6 +87,10 @@ then
   # systems, see exports(5) for more information).
 	echo "$RCNFS_SHAREDHOME_EXPORT_DIR *(rw,sync,no_root_squash)" >> /etc/exports
 	echo "$RCNFS_DATASETS_EXPORT_DIR *(rw,sync,no_root_squash)" >> /etc/exports
+  for dataset in $(ls $RCNFS_DATASETS_EXPORT_DIR)
+  do
+    echo "$RCNFS_DATASETS_EXPORT_DIR/$dataset *(rw,sync,no_root_squash)" >> /etc/exports
+  done
 
   # Start the NFS service.
   /etc/init.d/nfs-kernel-server start
