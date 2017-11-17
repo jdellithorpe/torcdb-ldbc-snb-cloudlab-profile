@@ -107,12 +107,13 @@ while [ "$(ssh rcnfs "[ -f /local/setup-nfs-done ] && echo 1 || echo 0")" != "1"
 done
 
 # NFS clients setup
-rcnfs_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
-mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
-echo "$rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+rcnfs_rclan_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
+my_rclan_ip=`grep "$(hostname --short)-rclan" /etc/hosts | cut -d$'\t' -f1`
+mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
+echo "$rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
 
-mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
-echo "$rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=`hostname -i` 0 0" >> /etc/fstab
+mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
+echo "$rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
 
 # Move user accounts onto the shared directory. rcmaster is responsible for
 # physically moving user files to shared folder. All other nodes just change
