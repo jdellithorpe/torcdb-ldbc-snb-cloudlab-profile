@@ -163,6 +163,7 @@ fi
 # Create backup.log file on each of the rc servers
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
+  chmod g=u $RCXX_BACKUP_DIR
   > $RCXX_BACKUP_DIR/backup.log
   chmod g=u $RCXX_BACKUP_DIR/backup.log
 fi
