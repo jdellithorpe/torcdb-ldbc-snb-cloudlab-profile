@@ -44,8 +44,7 @@ import geni.portal as portal
 import geni.rspec.pg as pg
 import geni.urn as urn
 
-# Allows for general parameters like disk image to be passed in. Useful for
-# setting up the cloudlab dashboard for this profile.
+# Portal context is where parameters and the rspec request is defined.
 pc = portal.Context()
 
 # The possible set of base disk-images that this cluster can be booted with.
@@ -57,15 +56,13 @@ images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04") ]
 # only m510 machines are supported.
 hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)") ]
 
-# Default the disk image to 64-bit Ubuntu 15.04
 pc.defineParameter("image", "Disk Image",
         portal.ParameterType.IMAGE, images[0], images,
         "Specify the base disk image that all the nodes of the cluster " +\
         "should be booted with.")
 
 pc.defineParameter("hardware_type", "Hardware Type",
-                   portal.ParameterType.NODETYPE,
-                   hardware_types[0], hardware_types)
+       portal.ParameterType.NODETYPE, hardware_types[0], hardware_types)
 
 pc.defineParameter("username", "Username", 
         portal.ParameterType.STRING, "", None,
