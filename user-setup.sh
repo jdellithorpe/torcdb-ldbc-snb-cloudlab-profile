@@ -14,6 +14,7 @@ git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 git clone https://github.com/PlatformLab/ldbc-snb-tools.git
 git clone https://github.com/jdellithorpe/RAMCloudUtils.git
+git clone https://github.com/apache/tinkerpop.git
 
 # Compile and configure RAMCloud
 cd RAMCloud
@@ -79,3 +80,7 @@ cd $HOME/ldbc-snb-impls
 mvn install -DskipTests
 cd snb-interactive-torc
 mvn compile assembly:single
+
+# Build the gremlin-console for TinkerPop
+cd $HOME/tinkerpop/gremlin-console
+mvn install -DskipTests
