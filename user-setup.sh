@@ -69,6 +69,7 @@ done
 
 # Build TorcDB
 cd $HOME/TorcDB
+git checkout ldbc-snb-optimized
 mvn install -DskipTests
 
 # Build the LDBC SNB driver
