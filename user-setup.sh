@@ -15,6 +15,7 @@ git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 git clone https://github.com/PlatformLab/ldbc-snb-tools.git
 git clone https://github.com/jdellithorpe/RAMCloudUtils.git
 git clone https://github.com/apache/tinkerpop.git
+git clone https://github.com/jdellithorpe/config.git
 
 # Compile and configure RAMCloud
 cd RAMCloud
@@ -94,3 +95,7 @@ cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apac
 cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
 cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
 cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
+
+# Configure the machine with my personal settings
+cd $HOME/config
+./cloudlab/setup.sh
