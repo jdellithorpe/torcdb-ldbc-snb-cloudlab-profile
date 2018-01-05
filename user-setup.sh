@@ -76,6 +76,10 @@ mvn install -DskipTests
 cd $HOME/ldbc_snb_driver
 mvn install -DskipTests
 
+# Configure the LDBC SNB driver
+cp /local/repository/ldbc_snb_driver.conf/ldbc_driver_defaults.properties $HOME/ldbc_snb_driver/configuration
+cp /local/repository/ldbc_snb_driver.conf/ldbc_snb_interactive_SF-0001.throughput.properties $HOME/ldbc_snb_driver/configuration/ldbc/snb/interactive
+
 # Build the LDBC SNB implementation for TorcDB
 cd $HOME/ldbc-snb-impls
 mvn install -DskipTests
