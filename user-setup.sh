@@ -24,30 +24,30 @@ ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 git checkout java-transactions
 
 # Generate private makefile configuration
-mkdir private
-cat >>private/MakefragPrivateTop <<EOL
-DEBUG := no
-
-CCACHE := yes
-LINKER := gold
-DEBUG_OPT := yes
-
-GLIBCXX_USE_CXX11_ABI := yes
-
-DPDK := yes
-DPDK_DIR := dpdk
-DPDK_SHARED := no
-EOL
+#mkdir private
+#cat >>private/MakefragPrivateTop <<EOL
+#DEBUG := no
+#
+#CCACHE := yes
+#LINKER := gold
+#DEBUG_OPT := yes
+#
+#GLIBCXX_USE_CXX11_ABI := yes
+#
+#DPDK := yes
+#DPDK_DIR := dpdk
+#DPDK_SHARED := no
+#EOL
 
 # Build DPDK libraries
-hardware_type=$(geni-get manifest | grep -oP 'hardware_type="\K[^"]*' | head -1)
-if [ "$hardware_type" = "m510" ]; then
-    MLNX_DPDK=y scripts/dpdkBuild.sh
-elif [ "$hardware_type" = "d430" ]; then
-    scripts/dpdkBuild.sh
-fi
+#hardware_type=$(geni-get manifest | grep -oP 'hardware_type="\K[^"]*' | head -1)
+#if [ "$hardware_type" = "m510" ]; then
+#    MLNX_DPDK=y scripts/dpdkBuild.sh
+#elif [ "$hardware_type" = "d430" ]; then
+#    scripts/dpdkBuild.sh
+#fi
 
-make -j8 DEBUG=no
+#make -j8 DEBUG=no
 
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
@@ -92,33 +92,33 @@ do
   fi
 done
 
-# Build TorcDB
-cd $HOME/TorcDB
-git checkout ldbc-snb-optimized
-mvn install -DskipTests
-
-# Build the LDBC SNB driver
-cd $HOME/ldbc_snb_driver
-mvn install -DskipTests
-
-# Configure the LDBC SNB driver
-cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver/
-
-# Build the LDBC SNB implementation for TorcDB
-cd $HOME/ldbc-snb-impls
-mvn install -DskipTests
-cd snb-interactive-torc
-mvn compile assembly:single
-
-# Build the gremlin-console for TinkerPop
-cd $HOME/tinkerpop/gremlin-console
-mvn install -DskipTests
-
-cd $HOME/ldbc-snb-impls
-cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
+## Build TorcDB
+#cd $HOME/TorcDB
+#git checkout ldbc-snb-optimized
+#mvn install -DskipTests
+#
+## Build the LDBC SNB driver
+#cd $HOME/ldbc_snb_driver
+#mvn install -DskipTests
+#
+## Configure the LDBC SNB driver
+#cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver/
+#
+## Build the LDBC SNB implementation for TorcDB
+#cd $HOME/ldbc-snb-impls
+#mvn install -DskipTests
+#cd snb-interactive-torc
+#mvn compile assembly:single
+#
+## Build the gremlin-console for TinkerPop
+#cd $HOME/tinkerpop/gremlin-console
+#mvn install -DskipTests
+#
+#cd $HOME/ldbc-snb-impls
+#cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+#cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+#cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+#cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
 
 # Configure the machine with my personal settings
 cd $HOME/config

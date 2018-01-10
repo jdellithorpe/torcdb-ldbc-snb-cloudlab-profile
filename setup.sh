@@ -63,9 +63,7 @@ OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
 MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
 axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
 tar xzf $MLNX_OFED.tgz
-cd $MLNX_OFED
-./mlnxofedinstall --force --without-fw-update
-cd ..
+#./$MLNX_OFED/mlnxofedinstall --force --without-fw-update
 
 # Configure some environment variables and settings for all users on all
 # machines.
@@ -184,42 +182,42 @@ then
   chmod g=u $RCXX_BACKUP_DIR/backup.log
 fi
 
-# Disabled hyperthreading by forcing cores 8 .. 15 offline
-NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
-for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
-  echo 0 > /sys/devices/system/cpu/cpu$N/online
-done
-
-# Enable cpuset functionality if it's not been done yet.
-# TODO: STILL NECESSARY AFTER INSTALLING CPUSET?
-if [ ! -d "/sys/fs/cgroup/cpuset" ]; then
-  mount -t tmpfs cgroup_root /sys/fs/cgroup
-  mkdir /sys/fs/cgroup/cpuset
-  mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
-fi
-
-# Enable hugepage support: http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
-# The changes will take effects after reboot. m510 is not a NUMA machine.
-# Reserve 1GB hugepages via kernel boot parameters
-kernel_boot_params="default_hugepagesz=1G hugepagesz=1G hugepages=8"
-# Disable intel_idle driver to gain control over C-states (this driver will
-# most ignore any other BIOS setting and kernel parameters). Then limit
-# available C-states to C1 by "idle=halt".
-kernel_boot_params+=" intel_idle.max_cstate=0 idle=halt"
-# Or more aggressively, keep processors in C0 even when they are idle.
-#kernel_boot_params+=" idle=poll"
-
-# Isolate certain cpus from kernel scheduling and put them into full
-# dynticks mode (need reboot to take effect)
-isolcpus="2"
-kernel_boot_params+=" isolcpus=$isolcpus nohz_full=$isolcpus rcu_nocbs=$isolcpus"
-
-# Enable perf taken branch stack sampling (i.e. "perf record -b ...")
-kernel_boot_params+=" lapic"
-
-# Update GRUB with our kernel boot parameters
-sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_boot_params /" /etc/default/grub
-update-grub
+## Disabled hyperthreading by forcing cores 8 .. 15 offline
+#NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
+#for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
+#  echo 0 > /sys/devices/system/cpu/cpu$N/online
+#done
+#
+## Enable cpuset functionality if it's not been done yet.
+## TODO: STILL NECESSARY AFTER INSTALLING CPUSET?
+#if [ ! -d "/sys/fs/cgroup/cpuset" ]; then
+#  mount -t tmpfs cgroup_root /sys/fs/cgroup
+#  mkdir /sys/fs/cgroup/cpuset
+#  mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
+#fi
+#
+## Enable hugepage support: http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
+## The changes will take effects after reboot. m510 is not a NUMA machine.
+## Reserve 1GB hugepages via kernel boot parameters
+#kernel_boot_params="default_hugepagesz=1G hugepagesz=1G hugepages=8"
+## Disable intel_idle driver to gain control over C-states (this driver will
+## most ignore any other BIOS setting and kernel parameters). Then limit
+## available C-states to C1 by "idle=halt".
+#kernel_boot_params+=" intel_idle.max_cstate=0 idle=halt"
+## Or more aggressively, keep processors in C0 even when they are idle.
+##kernel_boot_params+=" idle=poll"
+#
+## Isolate certain cpus from kernel scheduling and put them into full
+## dynticks mode (need reboot to take effect)
+#isolcpus="2"
+#kernel_boot_params+=" isolcpus=$isolcpus nohz_full=$isolcpus rcu_nocbs=$isolcpus"
+#
+## Enable perf taken branch stack sampling (i.e. "perf record -b ...")
+#kernel_boot_params+=" lapic"
+#
+## Update GRUB with our kernel boot parameters
+#sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_boot_params /" /etc/default/grub
+#update-grub
 # TODO: VERIFY THE OPTIONS WORK? http://www.breakage.org/2013/11/15/nohz_fullgodmode/
 
 # Do user-specific setup here only on rcmaster (since user's home folder is on
@@ -229,4 +227,4 @@ then
   sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
 fi
 
-reboot
+#reboot
