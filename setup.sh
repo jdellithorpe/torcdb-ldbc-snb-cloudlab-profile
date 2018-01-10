@@ -36,6 +36,9 @@ then
   for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
     echo 0 > /sys/devices/system/cpu/cpu$N/online
   done
+
+  # Set CPU scaling governor to "performance"
+  cpupower frequency-set -g performance
 fi
 
 # Check if we've already complete setup before. If so, the buck stops here.
@@ -45,6 +48,15 @@ fi
 # then it should go inside this if statement.
 if [ -f /local/setup_done ]
 then
+  # Post-restart configuration to do for rc machines.
+  if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
+  then
+    # Mount hugepages, disable THP(Transparent Hugepages) daemon
+    # I believe this must be done only after setting the hugepagesz kernel
+    # parameter and rebooting.
+    hugeadm --create-mounts --thp-never
+  fi
+
   exit 0
 fi
 
@@ -229,12 +241,12 @@ EOM
   # The changes will take effects after reboot. m510 is not a NUMA machine.
   # Reserve 1GB hugepages via kernel boot parameters
   kernel_boot_params="default_hugepagesz=1G hugepagesz=1G hugepages=8"
+
   # Disable intel_idle driver to gain control over C-states (this driver will
   # most ignore any other BIOS setting and kernel parameters). Then limit
-  # available C-states to C1 by "idle=halt".
-  #kernel_boot_params+=" intel_idle.max_cstate=0 idle=halt"
-  # Or more aggressively, keep processors in C0 even when they are idle.
-  #kernel_boot_params+=" idle=poll"
+  # available C-states to C1 by "idle=halt". Or more aggressively, keep
+  # processors in C0 even when they are idle by "idle=poll".
+  kernel_boot_params+=" intel_idle.max_cstate=0 idle=poll"
 
   # Isolate certain cpus from kernel scheduling and put them into full
   # dynticks mode (need reboot to take effect)
@@ -247,7 +259,8 @@ EOM
   # Update GRUB with our kernel boot parameters
   sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_boot_params /" /etc/default/grub
   update-grub
-  # TODO: VERIFY THE OPTIONS WORK? http://www.breakage.org/2013/11/15/nohz_fullgodmode/
+  # TODO: Verify that these options actually work as expected.
+  # http://www.breakage.org/2013/11/15/nohz_fullgodmode/
 
   # Note: We will reboot the rc machines at the end of this script so that the
   # kernel parameter changes can take effect.
