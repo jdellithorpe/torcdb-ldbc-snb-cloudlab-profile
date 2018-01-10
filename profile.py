@@ -151,7 +151,8 @@ for host in hostnames:
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_sharedhome_export_dir)
         nfs_bs.size = "200GB"
         # Add this node to the dataset blockstore LAN.
-        dslan.addInterface(node.addInterface("if2"))
+        if (len(dataset_urns) > 0):
+            dslan.addInterface(node.addInterface("if2"))
 
     pattern = re.compile("^rc[0-9][0-9]$")
     if pattern.match(host):
