@@ -59,11 +59,13 @@ apt-get --assume-yes install build-essential git-core doxygen libpcre3-dev \
         libboost-all-dev libgtest-dev libzookeeper-mt-dev zookeeper \
         libssl-dev default-jdk ccache
 # Mellanox OFED (Note: Reboot required after installing this).
+apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
+        tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
 OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
 MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
 axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
 tar xzf $MLNX_OFED.tgz
-#./$MLNX_OFED/mlnxofedinstall --force --without-fw-update
+./$MLNX_OFED/mlnxofedinstall --force --without-fw-update
 
 # Configure some environment variables and settings for all users on all
 # machines.
@@ -195,29 +197,29 @@ fi
 #  mkdir /sys/fs/cgroup/cpuset
 #  mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
 #fi
-#
-## Enable hugepage support: http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
-## The changes will take effects after reboot. m510 is not a NUMA machine.
-## Reserve 1GB hugepages via kernel boot parameters
-#kernel_boot_params="default_hugepagesz=1G hugepagesz=1G hugepages=8"
-## Disable intel_idle driver to gain control over C-states (this driver will
-## most ignore any other BIOS setting and kernel parameters). Then limit
-## available C-states to C1 by "idle=halt".
+
+# Enable hugepage support: http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
+# The changes will take effects after reboot. m510 is not a NUMA machine.
+# Reserve 1GB hugepages via kernel boot parameters
+kernel_boot_params="default_hugepagesz=1G hugepagesz=1G hugepages=8"
+# Disable intel_idle driver to gain control over C-states (this driver will
+# most ignore any other BIOS setting and kernel parameters). Then limit
+# available C-states to C1 by "idle=halt".
 #kernel_boot_params+=" intel_idle.max_cstate=0 idle=halt"
-## Or more aggressively, keep processors in C0 even when they are idle.
-##kernel_boot_params+=" idle=poll"
-#
-## Isolate certain cpus from kernel scheduling and put them into full
-## dynticks mode (need reboot to take effect)
+# Or more aggressively, keep processors in C0 even when they are idle.
+#kernel_boot_params+=" idle=poll"
+
+# Isolate certain cpus from kernel scheduling and put them into full
+# dynticks mode (need reboot to take effect)
 #isolcpus="2"
 #kernel_boot_params+=" isolcpus=$isolcpus nohz_full=$isolcpus rcu_nocbs=$isolcpus"
-#
-## Enable perf taken branch stack sampling (i.e. "perf record -b ...")
+
+# Enable perf taken branch stack sampling (i.e. "perf record -b ...")
 #kernel_boot_params+=" lapic"
-#
-## Update GRUB with our kernel boot parameters
-#sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_boot_params /" /etc/default/grub
-#update-grub
+
+# Update GRUB with our kernel boot parameters
+sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"$kernel_boot_params /" /etc/default/grub
+update-grub
 # TODO: VERIFY THE OPTIONS WORK? http://www.breakage.org/2013/11/15/nohz_fullgodmode/
 
 # Do user-specific setup here only on rcmaster (since user's home folder is on
@@ -227,4 +229,4 @@ then
   sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
 fi
 
-#reboot
+reboot
