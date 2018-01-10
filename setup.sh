@@ -26,6 +26,30 @@ DATASETS_DIR=/datasets
 # Other variables
 KERNEL_RELEASE=`uname -r`
 
+# === Here goes configuration that's performed on every boot. ===
+if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
+then
+  # Disabled hyperthreading by forcing cores 8 .. 15 offline. This is a
+  # performance optimization for RAMCloud. It is not necessary to do this to run
+  # RAMCloud.
+  NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
+  for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
+    echo 0 > /sys/devices/system/cpu/cpu$N/online
+  done
+fi
+
+# Check if we've already complete setup before. If so, the buck stops here.
+# Everything above will be executed on every boot. Everything below this will be
+# executed on the first boot only. Therefore any soft state that's reset after a
+# reboot should be set above. If the soft state can only be set after setup,
+# then it should go inside this if statement.
+if [ -f /local/setup_done ]
+then
+  exit 0
+fi
+
+# === Here goes configuration that happens once on the first boot. ===
+
 # === Software dependencies that need to be installed. ===
 # Common utilities
 apt-get update
@@ -146,13 +170,13 @@ if [ $(hostname --short) == "rcmaster" ]
 then
   for user in $(ls $SHAREDHOME_DIR)
   do
-      ssh_dir=$SHAREDHOME_DIR/$user/.ssh
-      /usr/bin/geni-get key > $ssh_dir/id_rsa
-      chmod 600 $ssh_dir/id_rsa
-      chown $user: $ssh_dir/id_rsa
-      ssh-keygen -y -f $ssh_dir/id_rsa > $ssh_dir/id_rsa.pub
-      cat $ssh_dir/id_rsa.pub >> $ssh_dir/authorized_keys
-      chmod 644 $ssh_dir/authorized_keys
+    ssh_dir=$SHAREDHOME_DIR/$user/.ssh
+    /usr/bin/geni-get key > $ssh_dir/id_rsa
+    chmod 600 $ssh_dir/id_rsa
+    chown $user: $ssh_dir/id_rsa
+    ssh-keygen -y -f $ssh_dir/id_rsa > $ssh_dir/id_rsa.pub
+    cat $ssh_dir/id_rsa.pub >> $ssh_dir/authorized_keys
+    chmod 644 $ssh_dir/authorized_keys
   done
 fi
 
@@ -191,14 +215,6 @@ then
 * hard memlock unlimited
 EOM
 
-  # Disabled hyperthreading by forcing cores 8 .. 15 offline. This is a
-  # performance optimization for RAMCloud. It is not necessary to do this to run
-  # RAMCloud.
-  NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
-  for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
-    echo 0 > /sys/devices/system/cpu/cpu$N/online
-  done
-
   # Enable cpuset functionality on rc machines. This is also optional, RAMCloud
   # will work without this. TODO: Check whether or not this is actually
   # necessary after installing the cpuset package on these machines.
@@ -233,6 +249,17 @@ EOM
   update-grub
   # TODO: VERIFY THE OPTIONS WORK? http://www.breakage.org/2013/11/15/nohz_fullgodmode/
 
-  # Reboot required for kernel parameter changes to take effect.
+  # Note: We will reboot the rc machines at the end of this script so that the
+  # kernel parameter changes can take effect.
+fi
+
+# Mark that setup has finished. This script is actually run again after a
+# reboot, so we need to mark that we've already setup this machine and catch
+# this flag after a reboot to prevent ourselves from re-running everything.
+> /local/setup_done
+
+# Reboot required on rc machines for kernel parameter changes to take effect.
+if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
+then
   reboot
 fi
