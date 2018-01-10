@@ -107,7 +107,9 @@ dslan.vlan_tagging = True
 dslan.link_multiplexing = True
 
 # Create array of the requested datasets
-dataset_urns = params.dataset_urns.split(" ")
+dataset_urns = []
+if (params.dataset_urns != ""):
+    dataset_urns = params.dataset_urns.split(" ")
 
 rcnfs_datasets_export_dir = "/remote"
 
