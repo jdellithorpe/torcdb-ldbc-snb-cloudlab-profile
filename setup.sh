@@ -185,18 +185,18 @@ then
 fi
 
 ## Disabled hyperthreading by forcing cores 8 .. 15 offline
-#NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
-#for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
-#  echo 0 > /sys/devices/system/cpu/cpu$N/online
-#done
-#
-## Enable cpuset functionality if it's not been done yet.
-## TODO: STILL NECESSARY AFTER INSTALLING CPUSET?
-#if [ ! -d "/sys/fs/cgroup/cpuset" ]; then
-#  mount -t tmpfs cgroup_root /sys/fs/cgroup
-#  mkdir /sys/fs/cgroup/cpuset
-#  mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
-#fi
+NUM_CPUS=$(lscpu | grep '^CPU(s):' | awk '{print $2}') 
+for N in $(seq $((NUM_CPUS/2)) $((NUM_CPUS-1))); do
+  echo 0 > /sys/devices/system/cpu/cpu$N/online
+done
+
+# Enable cpuset functionality if it's not been done yet.
+# TODO: STILL NECESSARY AFTER INSTALLING CPUSET?
+if [ ! -d "/sys/fs/cgroup/cpuset" ]; then
+  mount -t tmpfs cgroup_root /sys/fs/cgroup
+  mkdir /sys/fs/cgroup/cpuset
+  mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
+fi
 
 # Enable hugepage support: http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
 # The changes will take effects after reboot. m510 is not a NUMA machine.
