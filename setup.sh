@@ -124,6 +124,9 @@ then
   chmod 777 $RCNFS_SHAREDHOME_EXPORT_DIR
   chmod 777 $RCNFS_DATASETS_EXPORT_DIR
 
+  # Remote the lost+found folder in the shared home directory
+  rm -rf $RCNFS_SHAREDHOME_EXPORT_DIR/*
+
   # Make the NFS exported file system readable and writeable by all hosts in
   # the system (/etc/exports is the access control list for NFS exported file
   # systems, see exports(5) for more information).

@@ -12,7 +12,7 @@ git clone https://github.com/jdellithorpe/RAMCloud.git
 git clone https://github.com/PlatformLab/TorcDB.git
 git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
-git clone https://github.com/PlatformLab/ldbc-snb-tools.git
+git clone https://github.com/jdellithorpe/ldbc-snb-tools.git
 git clone https://github.com/jdellithorpe/RAMCloudUtils.git
 git clone https://github.com/apache/tinkerpop.git
 git clone https://github.com/jdellithorpe/config.git
@@ -47,7 +47,7 @@ elif [ "$hardware_type" = "d430" ]; then
     scripts/dpdkBuild.sh
 fi
 
-make -j8 DEBUG=no
+make -j8
 
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
