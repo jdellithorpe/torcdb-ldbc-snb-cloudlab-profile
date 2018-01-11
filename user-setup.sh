@@ -39,13 +39,15 @@ DPDK_DIR := dpdk
 DPDK_SHARED := no
 EOL
 
+MLNX_DPDK=y scripts/dpdkBuild.sh
+
 # Build DPDK libraries
-hardware_type=$(geni-get manifest | grep -oP 'hardware_type="\K[^"]*' | head -1)
-if [ "$hardware_type" = "m510" ]; then
-    MLNX_DPDK=y scripts/dpdkBuild.sh
-elif [ "$hardware_type" = "d430" ]; then
-    scripts/dpdkBuild.sh
-fi
+#hardware_type=$(geni-get manifest | grep -oP 'hardware_type="\K[^"]*' | head -1)
+#if [ "$hardware_type" = "m510" ]; then
+#    MLNX_DPDK=y scripts/dpdkBuild.sh
+#elif [ "$hardware_type" = "d430" ]; then
+#    scripts/dpdkBuild.sh
+#fi
 
 make -j8
 
