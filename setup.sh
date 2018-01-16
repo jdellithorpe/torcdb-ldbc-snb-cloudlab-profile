@@ -5,6 +5,9 @@
 # Get the absolute path of this script on the system.
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
+# Echo all the args so we can see how this script was invoked in the logs.
+echo $@
+
 # === Parameters decided by profile.py ===
 # RCNFS partition that will be exported via NFS and used as a shared home
 # directory for cluster users.
