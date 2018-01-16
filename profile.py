@@ -69,6 +69,11 @@ pc.defineParameter("username", "Username",
         portal.ParameterType.STRING, "", None,
         "Username for which all user-specific software will be configured.")
 
+pc.defineParameter("install_software", "Install Software", 
+        portal.ParameterType.BOOLEAN, True, None,
+        "Whether or not to install software beyond what is required for " +\
+        "startup.")
+
 # Default the cluster size to 5 nodes (minimum requires to support a 
 # replication factor of 3 and an independent coordinator). 
 pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
@@ -139,9 +144,9 @@ for host in hostnames:
     node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
 
     node.addService(pg.Execute(shell="sh", 
-        command="sudo /local/repository/setup.sh %s %s %s %s" % \
+        command="sudo /local/repository/setup.sh %s %s %s %s %s" % \
         (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
-        rcxx_backup_dir, params.username)))
+        rcxx_backup_dir, params.username, params.install_software)))
 
     # Add this node to the client LAN.
     rclan.addInterface(node.addInterface("if1"))
