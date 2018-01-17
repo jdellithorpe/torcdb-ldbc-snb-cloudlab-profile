@@ -151,7 +151,9 @@ for host in hostnames:
         rcxx_backup_dir, params.username, params.install_software)))
 
     # Add this node to the control LAN.
-    ctrllan.addInterface(node.addInterface("eth0"))
+    eth0 = node.addInterface("eth0")
+    eth0.component_id = "eth0"
+    ctrllan.addInterface(eth0)
 
     # Add this node to the client LAN.
     rclan.addInterface(node.addInterface("if1"))
