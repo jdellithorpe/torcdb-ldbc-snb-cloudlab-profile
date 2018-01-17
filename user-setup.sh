@@ -85,6 +85,7 @@ for i in $(seq ${#rcnames[@]})
 do
   hostname=${rcnames[$(( i - 1 ))]}
   ipaddress=`getent hosts $hostname | awk '{ print $1 }'`
+#  ipaddress=`ssh $hostname "hostname -i"`
   tuplestr="(\"$hostname\", \"$ipaddress\", $i)"
   if [[ $i == ${#rcnames[@]} ]]
   then
