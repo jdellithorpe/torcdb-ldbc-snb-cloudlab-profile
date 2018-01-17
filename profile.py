@@ -143,9 +143,10 @@ for host in hostnames:
     node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
 
     node.addService(pg.Execute(shell="sh", 
-        command="sudo /local/repository/setup.sh %s %s %s %s %s" % \
+        command="sudo /local/repository/setup.sh %s %s %s %s %s %s" % \
         (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
-        rcxx_backup_dir, params.username, params.install_software)))
+        rcxx_backup_dir, params.username, params.install_software,
+        params.num_rcnodes)))
 
     # Add this node to the client LAN.
     rclan.addInterface(node.addInterface("if1"))

@@ -21,6 +21,8 @@ RCXX_BACKUP_DIR=$3
 USERNAME=$4
 # Whether or not to install additional software beyond the basics.
 INSTALL_SOFTWARE=$5
+# Number of RCXX machines in the cluster.
+NUM_RCNODES=$6
 
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
@@ -124,6 +126,15 @@ cat >> /etc/ssh/ssh_config <<EOM
     StrictHostKeyChecking no
 EOM
 
+# Add machines on control network to /etc/hosts
+echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
+echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
+for i in $(seq 1 $NUM_RCNODES)
+do
+  host=$(printf "rc%02d" $i)
+  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
+done
+
 # RCNFS specific setup here. RCNFS exports RCNFS_SHAREDHOME_EXPORT_DIR (used as
 # a shared home directory for all users), and also RCNFS_DATASETS_EXPORT_DIR
 # (mount point for CloudLab datasets to which cluster nodes need shared access). 
@@ -165,18 +176,18 @@ done
 
 # NFS clients setup (all servers are NFS clients).
 rcnfs_rclan_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
-rcnfs_ip=`ssh rcnfs "hostname -i"` 
+rcnfs_ctrl_ip=`ssh rcnfs "hostname -i"` 
 my_rclan_ip=`grep "$(hostname --short)-rclan" /etc/hosts | cut -d$'\t' -f1`
-my_ip=`hostname -i` 
+my_ctrl_ip=`hostname -i` 
 #mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
-mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
+mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
 #echo "$rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
-echo "$rcnfs_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_ip 0 0" >> /etc/fstab
+echo "$rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
 
 #mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
-mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
+mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
 #echo "$rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
-echo "$rcnfs_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_ip 0 0" >> /etc/fstab
+echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
 
 # Move user accounts onto the shared directory. rcmaster is responsible for
 # physically moving user files to shared folder. All other nodes just change
