@@ -98,9 +98,6 @@ params = pc.bindParameters()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Create a lan on the control network
-ctrllan = request.LAN("ctrllan")
-
 # Create a local area network for the RAMCloud cluster.
 rclan = request.LAN("rclan")
 rclan.best_effort = True
@@ -149,11 +146,6 @@ for host in hostnames:
         command="sudo /local/repository/setup.sh %s %s %s %s %s" % \
         (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
         rcxx_backup_dir, params.username, params.install_software)))
-
-    # Add this node to the control LAN.
-    eth0 = node.addInterface("eth0")
-    eth0.component_id = "eth0"
-    ctrllan.addInterface(eth0)
 
     # Add this node to the client LAN.
     rclan.addInterface(node.addInterface("if1"))
