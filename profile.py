@@ -57,7 +57,7 @@ images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
 hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)") ]
 
 pc.defineParameter("image", "Disk Image",
-        portal.ParameterType.IMAGE, images[0], images,
+        portal.ParameterType.IMAGE, images[1], images,
         "Specify the base disk image that all the nodes of the cluster " +\
         "should be booted with.")
 
