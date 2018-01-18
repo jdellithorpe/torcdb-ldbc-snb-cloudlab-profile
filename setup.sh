@@ -232,10 +232,15 @@ then
   tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 EOM
+fi
 
+# RCNFS specific configuration.
+if [ $(hostname --short) == "rcnfs" ]
+then
   if [ "$INSTALL_SOFTWARE" == "True" ]
   then
-    # Execute all user-specific setup in user's shared folder using rcmaster.
+    # Execute all user-specific setup in user's shared folder using rcnfs.
+    # This is to try and reduce network traffic during builds.
     sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
   fi
 fi
