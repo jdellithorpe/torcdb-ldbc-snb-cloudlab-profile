@@ -126,15 +126,6 @@ cat >> /etc/ssh/ssh_config <<EOM
     StrictHostKeyChecking no
 EOM
 
-# Add machines on control network to /etc/hosts
-echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
-echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
-for i in $(seq 1 $NUM_RCNODES)
-do
-  host=$(printf "rc%02d" $i)
-  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
-done
-
 # RCNFS specific setup here. RCNFS exports RCNFS_SHAREDHOME_EXPORT_DIR (used as
 # a shared home directory for all users), and also RCNFS_DATASETS_EXPORT_DIR
 # (mount point for CloudLab datasets to which cluster nodes need shared access). 
@@ -220,6 +211,15 @@ then
     chmod 644 $ssh_dir/authorized_keys
   done
 fi
+
+# Add machines on control network to /etc/hosts
+echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
+echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
+for i in $(seq 1 $NUM_RCNODES)
+do
+  host=$(printf "rc%02d" $i)
+  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
+done
 
 # RCMaster specific configuration.
 if [ $(hostname --short) == "rcmaster" ]
