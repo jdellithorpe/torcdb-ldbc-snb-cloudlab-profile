@@ -72,7 +72,7 @@ echo "default_disk1 = '-f $RCXX_BACKUP_DIR/backup.log'" >> localconfig.py
 # Construct localconfig hosts array
 while read -r ip hostname alias1 alias2 alias3
 do 
-  if [[ $hostname =~ ^rc[0-9]+-rclan$ ]] 
+  if [[ $hostname =~ ^rc[0-9]+-ctrl$ ]] 
   then
     rcnames=("${rcnames[@]}" "$hostname") 
   fi 
@@ -95,33 +95,33 @@ do
   fi
 done
 
-## Build TorcDB
-#cd $HOME/TorcDB
-#git checkout ldbc-snb-optimized
-#mvn install -DskipTests
-#
-## Build the LDBC SNB driver
-#cd $HOME/ldbc_snb_driver
-#mvn install -DskipTests
-#
-## Configure the LDBC SNB driver
-#cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver/
-#
-## Build the LDBC SNB implementation for TorcDB
-#cd $HOME/ldbc-snb-impls
-#mvn install -DskipTests
-#cd snb-interactive-torc
-#mvn compile assembly:single
-#
-## Build the gremlin-console for TinkerPop
-#cd $HOME/tinkerpop/gremlin-console
-#mvn install -DskipTests
-#
-#cd $HOME/ldbc-snb-impls
-#cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-#cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-#cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-#cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
+# Build TorcDB
+cd $HOME/TorcDB
+git checkout ldbc-snb-optimized
+mvn install -DskipTests
+
+# Build the LDBC SNB driver
+cd $HOME/ldbc_snb_driver
+mvn install -DskipTests
+
+# Configure the LDBC SNB driver
+cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver/
+
+# Build the LDBC SNB implementation for TorcDB
+cd $HOME/ldbc-snb-impls
+mvn install -DskipTests
+cd snb-interactive-torc
+mvn compile assembly:single
+
+# Build the gremlin-console for TinkerPop
+cd $HOME/tinkerpop/gremlin-console
+mvn install -DskipTests
+
+cd $HOME/ldbc-snb-impls
+cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
+cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
 
 # Configure the machine with my personal settings
 cd $HOME/config
