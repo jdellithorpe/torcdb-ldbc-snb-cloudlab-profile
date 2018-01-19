@@ -75,16 +75,6 @@ fi
 
 # === Here goes configuration that happens once on the first boot. ===
 
-# Add machines on control network to /etc/hosts
-echo -e "\n===== ADDING CONTROL NETWORK HOSTS TO /ETC/HOSTS ====="
-echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
-echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
-for i in $(seq 1 $NUM_RCNODES)
-do
-  host=$(printf "rc%02d" $i)
-  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
-done
-
 # === Software dependencies that need to be installed. ===
 # Common utilities
 echo -e "\n===== INSTALLING COMMON UTILITIES ====="
@@ -246,6 +236,16 @@ then
     chmod 644 $ssh_dir/authorized_keys
   done
 fi
+
+# Add machines on control network to /etc/hosts
+echo -e "\n===== ADDING CONTROL NETWORK HOSTS TO /ETC/HOSTS ====="
+echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
+echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
+for i in $(seq 1 $NUM_RCNODES)
+do
+  host=$(printf "rc%02d" $i)
+  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
+done
 
 # RCMaster specific configuration.
 if [ $(hostname --short) == "rcmaster" ]
