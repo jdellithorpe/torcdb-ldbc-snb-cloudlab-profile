@@ -126,6 +126,7 @@ EOM
   # Mellanox OFED (Note: Reboot required after installing this).
   apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
         tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
+
   echo -e "\n===== INSTALLING MELLANOX ====="
   OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
   MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
