@@ -6,7 +6,9 @@
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Echo all the args so we can see how this script was invoked in the logs.
+echo -e "\n===== SCRIPT PARAMETERS ====="
 echo $@
+echo
 
 # === Parameters decided by profile.py ===
 # RCNFS partition that will be exported via NFS and used as a shared home
@@ -37,6 +39,7 @@ UBUNTU_RELEASE=`lsb_release --release | awk '{print $2}'`
 # === Here goes configuration that's performed on every boot. ===
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
+  echo -e "\n===== DISABLE HYPERTHREADING ====="
   # Disabled hyperthreading by forcing cores 8 .. 15 offline. This is a
   # performance optimization for RAMCloud. It is not necessary to do this to run
   # RAMCloud.
@@ -45,6 +48,7 @@ then
     echo 0 > /sys/devices/system/cpu/cpu$N/online
   done
 
+  echo -e "\n===== CHANGE CPU POWER GOVERNOR ====="
   # Set CPU scaling governor to "performance"
   cpupower frequency-set -g performance
 fi
@@ -59,6 +63,7 @@ then
   # Post-restart configuration to do for rc machines.
   if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
   then
+    echo -e "\n===== MOUNT HUGEPAGES ====="
     # Mount hugepages, disable THP(Transparent Hugepages) daemon
     # I believe this must be done only after setting the hugepagesz kernel
     # parameter and rebooting.
@@ -71,6 +76,7 @@ fi
 # === Here goes configuration that happens once on the first boot. ===
 
 # Add machines on control network to /etc/hosts
+echo -e "\n===== ADDING CONTROL NETWORK HOSTS TO /ETC/HOSTS ====="
 echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
 echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
 for i in $(seq 1 $NUM_RCNODES)
@@ -81,14 +87,17 @@ done
 
 # === Software dependencies that need to be installed. ===
 # Common utilities
+echo -e "\n===== INSTALLING COMMON UTILITIES ====="
 apt-get update
 apt-get --assume-yes install mosh vim tmux pdsh tree axel htop ctags
 # NFS
+echo -e "\n===== INSTALLING NFS PACKAGES ====="
 apt-get --assume-yes install nfs-kernel-server nfs-common
 
 if [ "$INSTALL_SOFTWARE" == "True" ]
 then
   # Java
+  echo -e "\n===== INSTALLING JAVA ====="
   if [ "$UBUNTU_RELEASE" == "14.04" ]
   then
     apt-get install --assume-yes software-properties-common
@@ -99,10 +108,11 @@ then
   elif [ "$UBUNTU_RELEASE" == "16.04" ]
   then
     # This works with Ubuntu 16.04.
-    apt-get install default-jre
+    apt-get --assume-yes install default-jre
   fi
 
   # Maven
+  echo -e "\n===== INSTALLING MAVEN ====="
   wget http://www-us.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
   tar -xvzf apache-maven-3.5.2-bin.tar.gz
   mv apache-maven-3.5.2 /usr/lib
@@ -111,6 +121,7 @@ then
 export PATH=/usr/lib/apache-maven-3.5.2/bin:$PATH
 EOM
   chmod ugo+x /etc/profile.d/maven.sh
+  echo -e "\n===== INSTALLING VARIOUS OTHER SOFTWARE ====="
   # cpupower, hugepages, msr-tools (for rdmsr), i7z
   apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
         hugepages cpuset msr-tools i7z
@@ -125,6 +136,7 @@ EOM
   # Mellanox OFED (Note: Reboot required after installing this).
   apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
         tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
+  echo -e "\n===== INSTALLING MELLANOX ====="
   OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
   MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
   axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
@@ -149,6 +161,7 @@ EOM
 # (mount point for CloudLab datasets to which cluster nodes need shared access). 
 if [ $(hostname --short) == "rcnfs" ]
 then
+  echo -e "\n===== SETTING UP NFS EXPORTS ON RCNFS ====="
   # Make the file system rwx by all.
   chmod 777 $RCNFS_SHAREDHOME_EXPORT_DIR
   chmod 777 $RCNFS_DATASETS_EXPORT_DIR
@@ -184,6 +197,7 @@ while [ "$(ssh rcnfs "[ -f /local/setup-nfs-done ] && echo 1 || echo 0")" != "1"
 done
 
 # NFS clients setup (all servers are NFS clients).
+echo -e "\n===== SETTING UP NFS CLIENT ====="
 rcnfs_rclan_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
 rcnfs_ctrl_ip=`ssh rcnfs "hostname -i"` 
 my_rclan_ip=`grep "$(hostname --short)-rclan" /etc/hosts | cut -d$'\t' -f1`
@@ -204,11 +218,13 @@ echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,
 # trying to move files to the same place at the same time.
 if [ $(hostname --short) == "rcmaster" ]
 then
+  echo -e "\n===== MOVING USERS HOME DIRECTORY TO NFS HOME ====="
   for user in $(ls /users/)
   do
     usermod --move-home --home $SHAREDHOME_DIR/$user $user
   done
 else
+  echo -e "\n===== SETTING USERS HOME DIRECTORY TO NFS HOME ====="
   for user in $(ls /users/)
   do
     usermod --home $SHAREDHOME_DIR/$user $user
@@ -218,6 +234,7 @@ fi
 # Setup password-less ssh between nodes
 if [ $(hostname --short) == "rcmaster" ]
 then
+  echo -e "\n===== SETTING UP SSH BETWEEN NODES ====="
   for user in $(ls $SHAREDHOME_DIR)
   do
     ssh_dir=$SHAREDHOME_DIR/$user/.ssh
@@ -233,6 +250,7 @@ fi
 # RCMaster specific configuration.
 if [ $(hostname --short) == "rcmaster" ]
 then
+  echo -e "\n===== SETTING UP AUTOMATIC TMUX ON RCMASTER ====="
   # Make tmux start automatically when logging into rcmaster
   cat >> /etc/profile.d/etc.sh <<EOM
 
@@ -248,6 +266,7 @@ if [ $(hostname --short) == "rcnfs" ]
 then
   if [ "$INSTALL_SOFTWARE" == "True" ]
   then
+    echo -e "\n===== RUNNING USER-SETUP SCRIPT ====="
     # Execute all user-specific setup in user's shared folder using rcnfs.
     # This is to try and reduce network traffic during builds.
     sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
@@ -257,6 +276,7 @@ fi
 # RCXX machines specific configuration.
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
+  echo -e "\n===== CREATING BACKUP.LOG ====="
   # Create backup.log file on each of the rc machines (used by RAMCloud backups
   # to store recovery segments).
   chmod g=u $RCXX_BACKUP_DIR
@@ -278,12 +298,14 @@ EOM
     # Enable cpuset functionality on rc machines. This is also optional, RAMCloud
     # will work without this. TODO: Check whether or not this is actually
     # necessary after installing the cpuset package on these machines.
+    echo -e "\n===== ENABLE CPUSETS ====="
     if [ ! -d "/sys/fs/cgroup/cpuset" ]; then
       mount -t tmpfs cgroup_root /sys/fs/cgroup
       mkdir /sys/fs/cgroup/cpuset
       mount -t cgroup cpuset -o cpuset /sys/fs/cgroup/cpuset/
     fi
 
+    echo -e "\n===== SET KERNEL BOOT PARAMETERS ====="
     # Enable hugepage support for DPDK: 
     # http://dpdk.org/doc/guides/linux_gsg/sys_reqs.html
     # The changes will take effects after reboot. m510 is not a NUMA machine.
@@ -325,6 +347,7 @@ if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
   if [ "$INSTALL_SOFTWARE" == "True" ]
   then
+    echo -e "\n===== REBOOTING ====="
     reboot
   fi
 fi
