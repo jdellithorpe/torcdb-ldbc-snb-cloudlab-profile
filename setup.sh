@@ -207,7 +207,7 @@ echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,
 # physically moving user files to shared folder. All other nodes just change
 # the home directory in /etc/passwd. This avoids the problem of all servers
 # trying to move files to the same place at the same time.
-if [ $(hostname --short) == "rcmaster" ]
+if [ $(hostname --short) == "rcnfs" ]
 then
   echo -e "\n===== MOVING USERS HOME DIRECTORY TO NFS HOME ====="
   for user in $(ls /users/)
@@ -223,7 +223,7 @@ else
 fi
 
 # Setup password-less ssh between nodes
-if [ $(hostname --short) == "rcmaster" ]
+if [ $(hostname --short) == "rcnfs" ]
 then
   echo -e "\n===== SETTING UP SSH BETWEEN NODES ====="
   for user in $(ls $SHAREDHOME_DIR)
