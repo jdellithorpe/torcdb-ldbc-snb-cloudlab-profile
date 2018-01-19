@@ -32,6 +32,7 @@ DATASETS_DIR=/datasets
 
 # Other variables
 KERNEL_RELEASE=`uname -r`
+UBUNTU_RELEASE=`lsb_release --release | awk '{print $2}'`
 
 # === Here goes configuration that's performed on every boot. ===
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
@@ -69,6 +70,15 @@ fi
 
 # === Here goes configuration that happens once on the first boot. ===
 
+# Add machines on control network to /etc/hosts
+echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
+echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
+for i in $(seq 1 $NUM_RCNODES)
+do
+  host=$(printf "rc%02d" $i)
+  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
+done
+
 # === Software dependencies that need to be installed. ===
 # Common utilities
 apt-get update
@@ -79,11 +89,19 @@ apt-get --assume-yes install nfs-kernel-server nfs-common
 if [ "$INSTALL_SOFTWARE" == "True" ]
 then
   # Java
-  apt-get install --assume-yes software-properties-common
-  add-apt-repository --yes ppa:webupd8team/java
-  apt-get update
-  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-  apt-get install --assume-yes oracle-java8-installer
+  if [ "$UBUNTU_RELEASE" == "14.04" ]
+  then
+    apt-get install --assume-yes software-properties-common
+    add-apt-repository --yes ppa:webupd8team/java
+    apt-get update
+    echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+    apt-get install --assume-yes oracle-java8-installer
+  elif [ "$UBUNTU_RELEASE" == "16.04" ]
+  then
+    # This works with Ubuntu 16.04.
+    apt-get install default-jre
+  fi
+
   # Maven
   wget http://www-us.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
   tar -xvzf apache-maven-3.5.2-bin.tar.gz
@@ -111,7 +129,7 @@ EOM
   MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
   axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
   tar xzf $MLNX_OFED.tgz
-  ./$MLNX_OFED/mlnxofedinstall --force --without-fw-update
+  ./$MLNX_OFED/mlnxofedinstall --force --without-fw-update >> ./$MLNX_OFED/install.log
 fi
 
 # === Configuration settings for all machines ===
@@ -211,15 +229,6 @@ then
     chmod 644 $ssh_dir/authorized_keys
   done
 fi
-
-# Add machines on control network to /etc/hosts
-echo $(ssh rcmaster "hostname -i")" "rcmaster-ctrl >> /etc/hosts
-echo $(ssh rcnfs "hostname -i")" "rcnfs-ctrl >> /etc/hosts
-for i in $(seq 1 $NUM_RCNODES)
-do
-  host=$(printf "rc%02d" $i)
-  echo $(ssh $host "hostname -i")" "$host-ctrl >> /etc/hosts
-done
 
 # RCMaster specific configuration.
 if [ $(hostname --short) == "rcmaster" ]
