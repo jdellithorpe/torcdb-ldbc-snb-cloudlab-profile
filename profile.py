@@ -100,15 +100,15 @@ request = pc.makeRequestRSpec()
 
 # Create a local area network for the RAMCloud cluster.
 rclan = request.LAN("rclan")
-rclan.best_effort = True
-rclan.vlan_tagging = False
-rclan.link_multiplexing = True
+#rclan.best_effort = True
+#rclan.vlan_tagging = False
+#rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
-dslan = request.LAN("dslan")
-dslan.best_effort = True
-dslan.vlan_tagging = True
-dslan.link_multiplexing = True
+#dslan = request.LAN("dslan")
+#dslan.best_effort = True
+#dslan.vlan_tagging = True
+#dslan.link_multiplexing = True
 
 # Create array of the requested datasets
 dataset_urns = []
