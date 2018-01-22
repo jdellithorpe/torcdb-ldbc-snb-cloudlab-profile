@@ -108,7 +108,7 @@ rclan = request.LAN("rclan")
 # Create a special network for connecting datasets to rcnfs.
 dslan = request.LAN("dslan")
 #dslan.best_effort = True
-#dslan.vlan_tagging = True
+dslan.vlan_tagging = True
 #dslan.link_multiplexing = True
 
 # Create array of the requested datasets
