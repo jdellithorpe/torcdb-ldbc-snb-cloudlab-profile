@@ -99,10 +99,10 @@ params = pc.bindParameters()
 request = pc.makeRequestRSpec()
 
 # Create a local area network for the RAMCloud cluster.
-#rclan = request.LAN("rclan")
-#rclan.best_effort = True
-#rclan.vlan_tagging = False
-#rclan.link_multiplexing = True
+rclan = request.LAN("rclan")
+rclan.best_effort = True
+rclan.vlan_tagging = False
+rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
 dslan = request.LAN("dslan")
@@ -149,7 +149,7 @@ for host in hostnames:
         params.num_rcnodes)))
 
     # Add this node to the client LAN.
-#    rclan.addInterface(node.addInterface("if1"))
+    rclan.addInterface(node.addInterface("if1"))
 
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
