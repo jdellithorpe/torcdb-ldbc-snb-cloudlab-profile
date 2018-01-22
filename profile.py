@@ -109,7 +109,7 @@ rclan = request.LAN("rclan")
 dslan = request.LAN("dslan")
 #dslan.best_effort = True
 dslan.vlan_tagging = True
-#dslan.link_multiplexing = True
+dslan.link_multiplexing = True
 
 # Create array of the requested datasets
 dataset_urns = []
