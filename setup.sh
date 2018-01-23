@@ -249,7 +249,7 @@ done
 
 for host in ${hostArray[@]}
 do
-  while ! $(ssh $host "hostname -i")
+  while ! ssh $host "hostname -i"
   do
     sleep 1
     echo "Waiting for $host to come up..."
