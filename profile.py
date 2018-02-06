@@ -41,6 +41,7 @@ import re
 
 import geni.aggregate.cloudlab as cloudlab
 import geni.portal as portal
+import geni.rspec.emulab as emulab
 import geni.rspec.pg as pg
 import geni.urn as urn
 
@@ -55,7 +56,8 @@ images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
 
 # The possible set of node-types this cluster can be configured with. Currently 
 # only m510 machines are supported.
-hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)") ]
+hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)"),
+                   ("d430", "d430 (Emulab, 8-Core Intel Xeon E5-2630v3)") ]
 
 pc.defineParameter("image", "Disk Image",
         portal.ParameterType.IMAGE, images[1], images,
@@ -101,9 +103,10 @@ request = pc.makeRequestRSpec()
 
 # Create a local area network for the RAMCloud cluster.
 rclan = request.LAN("rclan")
-rclan.best_effort = True
-rclan.vlan_tagging = False
-rclan.link_multiplexing = True
+if (params.hardware_type == "m510"):
+    rclan.best_effort = True
+    rclan.vlan_tagging = False
+    rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
 dslan = request.LAN("dslan")
@@ -142,6 +145,11 @@ for host in hostnames:
     node = request.RawPC(host)
     node.hardware_type = params.hardware_type
     node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
+
+    # Root keys are not installed by default on d430 machines.
+    if (params.hardware_type == "d430"):
+        # Install a private/public key on this node
+        node.installRootKeys(True, True)
 
     node.addService(pg.Execute(shell="sh", 
         command="sudo /local/repository/setup.sh %s %s %s %s %s %s" % \
