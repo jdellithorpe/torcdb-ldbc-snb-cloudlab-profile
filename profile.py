@@ -101,7 +101,14 @@ params = pc.bindParameters()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Create a local area network for the RAMCloud cluster.
+# Create a local area network for the whole cluster.
+clan = request.LAN("clan")
+if (params.hardware_type == "m510"):
+    rclan.best_effort = True
+    rclan.vlan_tagging = False
+    rclan.link_multiplexing = True
+
+# Create a dedicated network for the RAMCloud machines.
 rclan = request.LAN("rclan")
 if (params.hardware_type == "m510"):
     rclan.best_effort = True
@@ -152,14 +159,16 @@ for host in hostnames:
         node.installRootKeys(True, True)
 
     node.addService(pg.Execute(shell="sh", 
-        command="sudo /local/repository/setup.sh %s %s %s %s %s %s" % \
+        command="sudo /local/repository/setup.sh %s %s %s %s %s %s %s" % \
         (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
         rcxx_backup_dir, params.username, params.install_software,
-        params.num_rcnodes)))
+        params.num_rcnodes, params.hardware_type)))
 
-    # Add this node to the client LAN.
-    rclan.addInterface(node.addInterface("if1"))
+    # All nodes in the cluster connect to clan.
+    clan_iface = node.addInterface("clan_iface")
+    clan.addInterface(clan_iface)
 
+    # Stuff for NFS server.
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_sharedhome_export_dir)
@@ -168,11 +177,16 @@ for host in hostnames:
         if (len(dataset_urns) > 0):
             dslan.addInterface(node.addInterface("if2"))
 
+    # Stuff for RC machines.
     pattern = re.compile("^rc[0-9][0-9]$")
     if pattern.match(host):
         # Ask for a 200GB file system for RAMCloud backups
         backup_bs = node.Blockstore(host + "backup_bs", rcxx_backup_dir)
         backup_bs.size = "200GB"
+        # Add rc machine to the rclan.
+        rclan_iface = node.addInterface("rclan_iface")
+        rclan_iface.bandwidth = 10000000
+        rclan.addInterface(rclan_iface)
 
 # Generate the RSpec
 pc.printRequestRSpec(request)
