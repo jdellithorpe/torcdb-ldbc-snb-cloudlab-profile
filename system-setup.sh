@@ -236,6 +236,12 @@ else
   done
 fi
 
+# Change default shell to bash for all users on all machines
+for user in $(ls /users/)
+do
+  chsh -s /bin/bash $user
+done
+
 # Setup password-less ssh between nodes
 if [ $(hostname --short) == "rcnfs" ]
 then
