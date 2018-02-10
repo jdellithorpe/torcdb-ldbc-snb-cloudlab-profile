@@ -129,12 +129,15 @@ EOM
   apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
         tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
 
-  echo -e "\n===== INSTALLING MELLANOX ====="
-  OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
-  MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
-  axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
-  tar xzf $MLNX_OFED.tgz
-  ./$MLNX_OFED/mlnxofedinstall --force --without-fw-update >> ./$MLNX_OFED/install.log
+  if [ "$HARDWARE_TYPE" == "m510" ]
+  then
+    echo -e "\n===== INSTALLING MELLANOX OFED ====="
+    OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
+    MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
+    axel -n 8 -q http://www.mellanox.com/downloads/ofed/MLNX_OFED-3.4-1.0.0.0/$MLNX_OFED.tgz
+    tar xzf $MLNX_OFED.tgz
+    ./$MLNX_OFED/mlnxofedinstall --force --without-fw-update >> ./$MLNX_OFED/install.log
+  fi
 fi
 
 # === Configuration settings for all machines ===
