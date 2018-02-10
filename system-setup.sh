@@ -300,7 +300,7 @@ then
     echo -e "\n===== RUNNING USER-SETUP SCRIPT ====="
     # Execute all user-specific setup in user's shared folder using rcnfs.
     # This is to try and reduce network traffic during builds.
-    sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR
+    sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR $HARDWARE_TYPE
   fi
 fi
 

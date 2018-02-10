@@ -6,6 +6,8 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # RC server partition that will be used for RAMCloud backups.
 RCXX_BACKUP_DIR=$1
+# Hardware type that we're running on.
+HARDWARE_TYPE=$2
 
 # Checkout TorcDB, RAMCloud, and related repositories
 echo -e "\n===== CLONING REPOSITORIES ====="
@@ -41,15 +43,12 @@ DPDK_DIR := dpdk
 DPDK_SHARED := no
 EOL
 
-MLNX_DPDK=y scripts/dpdkBuild.sh
-
 # Build DPDK libraries
-#hardware_type=$(geni-get manifest | grep -oP 'hardware_type="\K[^"]*' | head -1)
-#if [ "$hardware_type" = "m510" ]; then
-#    MLNX_DPDK=y scripts/dpdkBuild.sh
-#elif [ "$hardware_type" = "d430" ]; then
-#    scripts/dpdkBuild.sh
-#fi
+if [ "$HARDWARE_TYPE" == "m510" ]; then
+    MLNX_DPDK=y scripts/dpdkBuild.sh
+elif [ "$HARDWARE_TYPE" == "d430" ]; then
+    scripts/dpdkBuild.sh
+fi
 
 make -j8
 
