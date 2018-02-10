@@ -213,6 +213,13 @@ mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_clan_ip:$RCNFS_DATASETS_EXPORT_DIR $DA
 echo "$rcnfs_clan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_clan_ip 0 0" >> /etc/fstab
 #echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
 
+# Change default shell to bash for all users on all machines
+echo -e "\n===== CHANGE USERS SHELL TO BASH ====="
+for user in $(ls /users/)
+do
+  chsh -s /bin/bash $user
+done
+
 # Move user accounts onto the shared directory. rcmaster is responsible for
 # physically moving user files to shared folder. All other nodes just change
 # the home directory in /etc/passwd. This avoids the problem of all servers
@@ -235,12 +242,6 @@ else
     usermod --home $SHAREDHOME_DIR/$user $user
   done
 fi
-
-# Change default shell to bash for all users on all machines
-for user in $(ls /users/)
-do
-  chsh -s /bin/bash $user
-done
 
 # Setup password-less ssh between nodes
 if [ $(hostname --short) == "rcnfs" ]
