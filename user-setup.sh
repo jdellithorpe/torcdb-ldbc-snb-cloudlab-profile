@@ -27,9 +27,11 @@ git submodule update --init --recursive
 ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 git checkout java-transactions
 
-# Generate private makefile configuration
-mkdir private
-cat >>private/MakefragPrivateTop <<EOL
+# Build DPDK libraries
+if [ "$HARDWARE_TYPE" == "m510" ]; then
+  # Generate private makefile configuration
+  mkdir private
+  cat >>private/MakefragPrivateTop <<EOL
 DEBUG := no
 
 CCACHE := yes
@@ -42,11 +44,23 @@ DPDK := yes
 DPDK_DIR := dpdk
 DPDK_SHARED := no
 EOL
-
-# Build DPDK libraries
-if [ "$HARDWARE_TYPE" == "m510" ]; then
     MLNX_DPDK=y scripts/dpdkBuild.sh
 elif [ "$HARDWARE_TYPE" == "d430" ]; then
+  # Generate private makefile configuration
+  mkdir private
+  cat >>private/MakefragPrivateTop <<EOL
+DEBUG := no
+
+CCACHE := yes
+LINKER := gold
+DEBUG_OPT := yes
+
+GLIBCXX_USE_CXX11_ABI := yes
+
+DPDK := yes
+DPDK_DIR := dpdk
+DPDK_SHARED := yes
+EOL
     scripts/dpdkBuild.sh
 fi
 
