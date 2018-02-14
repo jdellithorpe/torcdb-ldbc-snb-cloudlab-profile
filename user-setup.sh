@@ -59,7 +59,7 @@ GLIBCXX_USE_CXX11_ABI := yes
 
 DPDK := yes
 DPDK_DIR := dpdk
-DPDK_SHARED := yes
+DPDK_SHARED := no
 EOL
     scripts/dpdkBuild.sh
 fi
