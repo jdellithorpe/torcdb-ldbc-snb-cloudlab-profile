@@ -28,7 +28,7 @@ ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 git checkout java-transactions
 
 # Build DPDK libraries
-if [ "$HARDWARE_TYPE" == "m510" ]; then
+if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]; then
   # Generate private makefile configuration
   mkdir private
   cat >>private/MakefragPrivateTop <<EOL

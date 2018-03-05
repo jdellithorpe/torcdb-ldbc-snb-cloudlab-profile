@@ -129,7 +129,7 @@ EOM
   apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
         tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
 
-  if [ "$HARDWARE_TYPE" == "m510" ]
+  if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]
   then
     echo -e "\n===== INSTALLING MELLANOX OFED ====="
     OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
