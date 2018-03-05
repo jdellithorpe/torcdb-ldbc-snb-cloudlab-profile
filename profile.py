@@ -56,7 +56,8 @@ images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
 # The possible set of node-types this cluster can be configured with. Currently 
 # only m510 machines are supported.
 hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)"),
-                   ("d430", "d430 (Emulab, 8-Core Intel Xeon E5-2630v3)") ]
+                   ("d430", "d430 (Emulab, 8-Core Intel Xeon E5-2630v3)"),
+                   ("xl170", "xl170") ]
 
 pc.defineParameter("image", "Disk Image",
         portal.ParameterType.IMAGE, images[1], images,
