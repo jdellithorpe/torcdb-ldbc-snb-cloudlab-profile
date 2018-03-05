@@ -103,14 +103,14 @@ request = pc.makeRequestRSpec()
 
 # Create a local area network for the whole cluster.
 clan = request.LAN("clan")
-if (params.hardware_type == "m510"):
+if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
     clan.best_effort = True
     clan.vlan_tagging = False
     clan.link_multiplexing = True
 
 # Create a dedicated network for the RAMCloud machines.
 rclan = request.LAN("rclan")
-if (params.hardware_type == "m510"):
+if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
     rclan.best_effort = True
     rclan.vlan_tagging = False
     rclan.link_multiplexing = True
