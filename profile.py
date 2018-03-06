@@ -183,7 +183,10 @@ for host in hostnames:
     if pattern.match(host):
         # Ask for a 200GB file system for RAMCloud backups
         backup_bs = node.Blockstore(host + "backup_bs", rcxx_backup_dir)
-        backup_bs.size = "200GB"
+        if (params.hardware_type == "xl170"):
+            backup_bs.size = "420GB"
+        else:
+            backup_bs.size = "200GB"
         # Add rc machine to the rclan.
         rclan_iface = node.addInterface("rclan_iface")
         rclan_iface.bandwidth = 10000000
