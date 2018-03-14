@@ -145,7 +145,7 @@ hostnames = ["rcmaster", "rcnfs"]
 for i in range(params.num_rcnodes):
     hostnames.append("rc%02d" % (i + 1))
 
-rcnfs_sharedhome_export_dir = "/local/nfs"
+rcnfs_sharedhome_export_dir = "/foobar/nfs"
 rcxx_backup_dir = "/local/rcbackup"
 
 # Setup the cluster one node at a time.
