@@ -173,7 +173,10 @@ for host in hostnames:
     if host == "rcnfs":
         # Ask for a 200GB file system to export via NFS
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_sharedhome_export_dir)
-        nfs_bs.size = "200GB"
+        if (params.hardware_type == "xl170"):
+            nfs_bs.size = "400GB"
+        else:
+            nfs_bs.size = "200GB"
         # Add this node to the dataset blockstore LAN.
         if (len(dataset_urns) > 0):
             dslan.addInterface(node.addInterface("if2"))
@@ -184,7 +187,7 @@ for host in hostnames:
         # Ask for a 200GB file system for RAMCloud backups
         backup_bs = node.Blockstore(host + "backup_bs", rcxx_backup_dir)
         if (params.hardware_type == "xl170"):
-            backup_bs.size = "420GB"
+            backup_bs.size = "400GB"
         else:
             backup_bs.size = "200GB"
         # Add rc machine to the rclan.
