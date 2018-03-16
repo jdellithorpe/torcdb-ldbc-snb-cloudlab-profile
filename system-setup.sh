@@ -164,13 +164,14 @@ then
   # The datasets directory only exists if the user is mounting remote datasets.
   if [ ! -e "$RCNFS_DATASETS_EXPORT_DIR" ]
   then
+    echo -e "\nNOTICE: Creating directory $RCNFS_DATASETS_EXPORT_DIR"
     mkdir $RCNFS_DATASETS_EXPORT_DIR
   fi
 
   chmod 777 $RCNFS_DATASETS_EXPORT_DIR
 
-  # Remote the lost+found folder in the shared home directory
-  rm -rf $RCNFS_SHAREDHOME_EXPORT_DIR/*
+  # Remove the lost+found folder in the shared home directory
+  #rm -rf $RCNFS_SHAREDHOME_EXPORT_DIR/*
 
   # Make the NFS exported file system readable and writeable by all hosts in
   # the system (/etc/exports is the access control list for NFS exported file
