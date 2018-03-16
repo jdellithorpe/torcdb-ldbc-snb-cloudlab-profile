@@ -162,9 +162,9 @@ then
   chmod 777 $RCNFS_SHAREDHOME_EXPORT_DIR
   
   # The datasets directory only exists if the user is mounting remote datasets.
-  if [ ! -e "$NFS_DATASETS_EXPORT_DIR" ]
+  if [ ! -e "$RCNFS_DATASETS_EXPORT_DIR" ]
   then
-    mkdir $NFS_DATASETS_EXPORT_DIR
+    mkdir $RCNFS_DATASETS_EXPORT_DIR
   fi
 
   chmod 777 $RCNFS_DATASETS_EXPORT_DIR
