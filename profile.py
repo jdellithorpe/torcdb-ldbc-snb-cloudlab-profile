@@ -159,11 +159,11 @@ for host in hostnames:
         # Install a private/public key on this node
         node.installRootKeys(True, True)
 
-#    node.addService(pg.Execute(shell="sh", 
-#        command="sudo /local/repository/system-setup.sh %s %s %s %s %s %s %s" % \
-#        (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
-#        rcxx_backup_dir, params.username, params.install_software,
-#        params.num_rcnodes, params.hardware_type)))
+    node.addService(pg.Execute(shell="sh", 
+        command="sudo /local/repository/system-setup.sh %s %s %s %s %s %s %s" % \
+        (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
+        rcxx_backup_dir, params.username, params.install_software,
+        params.num_rcnodes, params.hardware_type)))
 
     # All nodes in the cluster connect to clan.
     clan_iface = node.addInterface("clan_iface")
