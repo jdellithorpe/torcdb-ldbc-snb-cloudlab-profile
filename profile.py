@@ -175,6 +175,7 @@ for host in hostnames:
         nfs_bs = node.Blockstore(host + "nfs_bs", rcnfs_sharedhome_export_dir)
         if (params.hardware_type == "xl170"):
             nfs_bs.size = "400GB"
+            nfs_bs.placement = "SYSVOL"
         else:
             nfs_bs.size = "200GB"
         # Add this node to the dataset blockstore LAN.
