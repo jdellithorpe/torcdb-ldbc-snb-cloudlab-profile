@@ -115,7 +115,7 @@ done
 # Build TorcDB
 echo -e "\n===== BUILD TORCDB ====="
 cd $HOME/TorcDB
-git checkout ldbc-snb-optimized
+#git checkout ldbc-snb-optimized
 mvn install -DskipTests
 
 # Build the LDBC SNB driver
