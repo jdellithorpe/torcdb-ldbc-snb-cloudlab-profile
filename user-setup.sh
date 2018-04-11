@@ -25,7 +25,6 @@ echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
 cd RAMCloud
 git submodule update --init --recursive
 ln -s ../../hooks/pre-commit .git/hooks/pre-commit
-git checkout java-transactions
 
 # Build DPDK libraries
 if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]; then
