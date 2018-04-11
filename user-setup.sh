@@ -68,7 +68,9 @@ make -j8
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
 
-export LD_LIBRARY_PATH=$HOME/RAMCloud/obj.master
+export RAMCLOUD_HOME=$HOME/RAMCloud
+
+export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.master
 EOM
 
 cd bindings/java
