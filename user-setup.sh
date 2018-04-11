@@ -84,7 +84,7 @@ cd $HOME/RAMCloud/scripts
 > localconfig.py
 
 # Set the backup file location
-echo "default_disk1 = '-f $RCXX_BACKUP_DIR/backup.log'" >> localconfig.py
+echo "default_disks = '-f $RCXX_BACKUP_DIR/backup.log'" >> localconfig.py
 
 # Construct localconfig hosts array
 echo -e "\n===== SETUP RAMCLOUD LOCALCONFIG.PY ====="
