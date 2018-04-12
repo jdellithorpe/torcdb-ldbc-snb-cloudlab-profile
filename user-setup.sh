@@ -67,7 +67,7 @@ EOL
   fi
 fi
 
-make -j8 DEBUG=no
+make -j8 DEBUG=no GLIBCXX_USE_CXX11_ABI=yes
 
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
