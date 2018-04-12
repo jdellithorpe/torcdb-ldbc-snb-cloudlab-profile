@@ -77,6 +77,11 @@ pc.defineParameter("install_software", "Install Software",
         "Whether or not to install software beyond what is required for " +\
         "startup.")
 
+pc.defineParameter("install_dpdk", "Install DPDK", 
+        portal.ParameterType.BOOLEAN, True, None,
+        "Whether or not to install DPDK. This only has an effect if " +\
+        "Install Software is checked.")
+
 # Default the cluster size to 5 nodes (minimum requires to support a 
 # replication factor of 3 and an independent coordinator). 
 pc.defineParameter("num_rcnodes", "RAMCloud Cluster Size",
@@ -160,10 +165,10 @@ for host in hostnames:
         node.installRootKeys(True, True)
 
     node.addService(pg.Execute(shell="sh", 
-        command="sudo /local/repository/system-setup.sh %s %s %s %s %s %s %s" % \
+        command="sudo /local/repository/system-setup.sh %s %s %s %s %s %s %s %s" % \
         (rcnfs_sharedhome_export_dir, rcnfs_datasets_export_dir, 
         rcxx_backup_dir, params.username, params.install_software,
-        params.num_rcnodes, params.hardware_type)))
+        params.num_rcnodes, params.hardware_type, params.install_dpdk)))
 
     # All nodes in the cluster connect to clan.
     clan_iface = node.addInterface("clan_iface")

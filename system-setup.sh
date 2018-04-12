@@ -27,6 +27,8 @@ INSTALL_SOFTWARE=$5
 NUM_RCNODES=$6
 # Hardware type that we're running on.
 HARDWARE_TYPE=$7
+# Whether or not to install DPDK on the machine
+INSTALL_DPDK=$8
 
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
@@ -129,7 +131,7 @@ EOM
   apt-get --assume-yes install tk8.4 chrpath graphviz tcl8.4 libgfortran3 dkms \
         tcl pkg-config gfortran curl libnl1 quilt dpatch swig tk python-libxml2
 
-  if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]
+  if [ "$INSTALL_DPDK" == "True" ]
   then
     echo -e "\n===== INSTALLING MELLANOX OFED ====="
     OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
@@ -304,7 +306,7 @@ then
     echo -e "\n===== RUNNING USER-SETUP SCRIPT ====="
     # Execute all user-specific setup in user's shared folder using rcnfs.
     # This is to try and reduce network traffic during builds.
-    sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR $HARDWARE_TYPE
+    sudo --login -u $USERNAME $SCRIPTPATH/user-setup.sh $RCXX_BACKUP_DIR $HARDWARE_TYPE $INSTALL_DPDK
   fi
 fi
 
@@ -328,7 +330,7 @@ then
 * hard memlock unlimited
 EOM
 
-  if [ "$INSTALL_SOFTWARE" == "True" ]
+  if [ "$INSTALL_SOFTWARE" == "True" ] && [ "$INSTALL_DPDK" == "True" ]
   then
     # Enable cpuset functionality on rc machines. This is also optional, RAMCloud
     # will work without this. TODO: Check whether or not this is actually
@@ -380,7 +382,7 @@ fi
 # Reboot required on rc machines for kernel parameter changes to take effect.
 if [[ $(hostname --short) =~ ^rc[0-9][0-9]$ ]]
 then
-  if [ "$INSTALL_SOFTWARE" == "True" ]
+  if [ "$INSTALL_SOFTWARE" == "True" ] && [ "$INSTALL_DPDK" == "True" ]
   then
     echo -e "\n===== REBOOTING ====="
     reboot

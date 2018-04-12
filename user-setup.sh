@@ -8,6 +8,8 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 RCXX_BACKUP_DIR=$1
 # Hardware type that we're running on.
 HARDWARE_TYPE=$2
+# Whether or not to install DPDK on the machine
+INSTALL_DPDK=$3
 
 # Checkout TorcDB, RAMCloud, and related repositories
 echo -e "\n===== CLONING REPOSITORIES ====="
@@ -27,10 +29,11 @@ git submodule update --init --recursive
 ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 
 # Build DPDK libraries
-if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]; then
-  # Generate private makefile configuration
-  mkdir private
-  cat >>private/MakefragPrivateTop <<EOL
+if [ "$INSTALL_DPDK" == "True" ]; then
+  if [ "$HARDWARE_TYPE" == "m510" ] || [ "$HARDWARE_TYPE" == "xl170" ]; then
+    # Generate private makefile configuration
+    mkdir private
+    cat >>private/MakefragPrivateTop <<EOL
 DEBUG := no
 
 CCACHE := yes
@@ -44,10 +47,10 @@ DPDK_DIR := dpdk
 DPDK_SHARED := no
 EOL
     MLNX_DPDK=y scripts/dpdkBuild.sh
-elif [ "$HARDWARE_TYPE" == "d430" ]; then
-  # Generate private makefile configuration
-  mkdir private
-  cat >>private/MakefragPrivateTop <<EOL
+  elif [ "$HARDWARE_TYPE" == "d430" ]; then
+    # Generate private makefile configuration
+    mkdir private
+    cat >>private/MakefragPrivateTop <<EOL
 DEBUG := no
 
 CCACHE := yes
@@ -61,9 +64,10 @@ DPDK_DIR := dpdk
 DPDK_SHARED := no
 EOL
     scripts/dpdkBuild.sh
+  fi
 fi
 
-make -j8
+make -j8 DEBUG=no
 
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
