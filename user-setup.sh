@@ -27,6 +27,7 @@ echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
 cd RAMCloud
 git submodule update --init --recursive
 ln -s ../../hooks/pre-commit .git/hooks/pre-commit
+git checkout jni-updates
 
 # Build DPDK libraries
 if [ "$INSTALL_DPDK" == "True" ]; then
@@ -65,16 +66,23 @@ DPDK_SHARED := no
 EOL
     scripts/dpdkBuild.sh
   fi
+else
+  # Generate private makefile configuration
+  mkdir private
+  cat >>private/MakefragPrivateTop <<EOL
+DEBUG := no
+GLIBCXX_USE_CXX11_ABI := yes
+EOL
 fi
 
-make -j8 DEBUG=no GLIBCXX_USE_CXX11_ABI=yes
+make -j8
 
 # Add path to libramcloud.so to dynamic library search path
 cat >> $HOME/.bashrc <<EOM
 
 export RAMCLOUD_HOME=$HOME/RAMCloud
 
-export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.master
+export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.jni-updates
 EOM
 
 cd bindings/java
