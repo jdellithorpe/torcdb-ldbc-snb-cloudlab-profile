@@ -83,7 +83,7 @@ fi
 # Common utilities
 echo -e "\n===== INSTALLING COMMON UTILITIES ====="
 apt-get update
-apt-get --assume-yes install mosh vim tmux pdsh tree axel htop ctags
+apt-get --assume-yes install mosh vim tmux pdsh tree axel htop ctags cscope
 # NFS
 echo -e "\n===== INSTALLING NFS PACKAGES ====="
 apt-get --assume-yes install nfs-kernel-server nfs-common
