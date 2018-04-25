@@ -152,10 +152,10 @@ cd $HOME/tinkerpop/gremlin-console
 mvn install -DskipTests
 
 cd $HOME/ldbc-snb-impls
-cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone/lib
-cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-3.3.1-SNAPSHOT-standalone
+cp snb-interactive-torc/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-*-SNAPSHOT-standalone/lib
+cp snb-interactive-tools/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-*-SNAPSHOT-standalone/lib
+cp snb-interactive-core/target/*.jar $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-*-SNAPSHOT-standalone/lib
+cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-console/target/apache-tinkerpop-gremlin-console-*-SNAPSHOT-standalone
 
 # Configure the machine with my personal settings
 echo -e "\n===== SETUP USER CONFIG SETTINGS ====="
