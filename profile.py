@@ -112,20 +112,27 @@ clan = request.LAN("clan")
 if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
     clan.best_effort = True
     clan.vlan_tagging = False
-    clan.link_multiplexing = True
+    if (params.install_dpdk == True):
+        clan.link_multiplexing = False
+    else:
+        clan.link_multiplexing = True
 
 # Create a dedicated network for the RAMCloud machines.
 rclan = request.LAN("rclan")
 if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
     rclan.best_effort = True
     rclan.vlan_tagging = False
-    rclan.link_multiplexing = True
+    if (params.install_dpdk == True):
+        rclan.link_multiplexing = False
+    else:
+        rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
-dslan = request.LAN("dslan")
-dslan.best_effort = True
-dslan.vlan_tagging = True
-dslan.link_multiplexing = True
+if (params.install_dpdk == False):
+    dslan = request.LAN("dslan")
+    dslan.best_effort = True
+    dslan.vlan_tagging = True
+    dslan.link_multiplexing = True
 
 # Create array of the requested datasets
 dataset_urns = []
