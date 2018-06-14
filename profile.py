@@ -118,13 +118,11 @@ if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
         clan.link_multiplexing = True
 
 # Create a dedicated network for the RAMCloud machines.
-rclan = request.LAN("rclan")
-if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
-    rclan.best_effort = True
-    rclan.vlan_tagging = False
-    if (params.install_dpdk == True):
-        rclan.link_multiplexing = False
-    else:
+if (params.install_dpdk == False):
+    rclan = request.LAN("rclan")
+    if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
+        rclan.best_effort = True
+        rclan.vlan_tagging = False
         rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
@@ -204,9 +202,10 @@ for host in hostnames:
         else:
             backup_bs.size = "200GB"
         # Add rc machine to the rclan.
-        rclan_iface = node.addInterface("rclan_iface")
-        #rclan_iface.bandwidth = 10000000
-        rclan.addInterface(rclan_iface)
+        if (params.install_dpdk == False):
+            rclan_iface = node.addInterface("rclan_iface")
+            rclan_iface.bandwidth = 10000000
+            rclan.addInterface(rclan_iface)
 
 # Generate the RSpec
 pc.printRequestRSpec(request)
