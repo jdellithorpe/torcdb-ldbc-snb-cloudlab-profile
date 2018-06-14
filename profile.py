@@ -205,7 +205,7 @@ for host in hostnames:
             backup_bs.size = "200GB"
         # Add rc machine to the rclan.
         rclan_iface = node.addInterface("rclan_iface")
-        rclan_iface.bandwidth = 10000000
+        #rclan_iface.bandwidth = 10000000
         rclan.addInterface(rclan_iface)
 
 # Generate the RSpec
