@@ -19,6 +19,7 @@ git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 git clone https://github.com/jdellithorpe/ldbc-snb-tools.git
 git clone https://github.com/jdellithorpe/RAMCloudUtils.git
+git clone https://github.com/jdellithorpe/rcperf.git
 git clone https://github.com/apache/tinkerpop.git
 git clone https://github.com/jdellithorpe/config.git
 
