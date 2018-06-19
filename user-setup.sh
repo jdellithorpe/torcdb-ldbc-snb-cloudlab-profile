@@ -102,10 +102,18 @@ echo "default_disks = '-f $RCXX_BACKUP_DIR/backup.log'" >> localconfig.py
 echo -e "\n===== SETUP RAMCLOUD LOCALCONFIG.PY ====="
 while read -r ip hostname alias1 alias2 alias3
 do 
-  if [[ $hostname =~ ^rc[0-9]+-clan$ ]] 
+  if [[ $INSTALL_DPDK == True ]]
   then
-    rcnames=("${rcnames[@]}" "$hostname") 
-  fi 
+    if [[ $hostname =~ ^rc[0-9]+-ctrl$ ]] 
+    then
+      rcnames=("${rcnames[@]}" "$hostname") 
+    fi 
+  else
+    if [[ $hostname =~ ^rc[0-9]+-clan$ ]] 
+    then
+      rcnames=("${rcnames[@]}" "$hostname") 
+    fi 
+  fi
 done < /etc/hosts
 IFS=$'\n' rcnames=($(sort <<<"${rcnames[*]}"))
 unset IFS
