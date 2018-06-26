@@ -1,5 +1,7 @@
 #!/bin/bash
 
+NUM_RCNODES=$1
+
 # Add machines on control network to /etc/hosts
 echo -e "\n===== ADDING CONTROL NETWORK HOSTS TO /ETC/HOSTS ====="
 hostArray=("rcmaster" "rcnfs")
