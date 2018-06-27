@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo -e "\n===== INSTALLING MELLANOX OFED ====="
 OS_VER="ubuntu`lsb_release -r | cut -d":" -f2 | xargs`"
 MLNX_OFED="MLNX_OFED_LINUX-3.4-1.0.0.0-$OS_VER-x86_64"
