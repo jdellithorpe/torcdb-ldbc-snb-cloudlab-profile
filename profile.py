@@ -107,30 +107,18 @@ params = pc.bindParameters()
 # Create a Request object to start building the RSpec.
 request = pc.makeRequestRSpec()
 
-# Create a local area network for the whole cluster.
-clan = request.LAN("clan")
-if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
-    clan.best_effort = True
-    clan.vlan_tagging = False
-    if (params.install_dpdk == True):
-        clan.link_multiplexing = False
-    else:
-        clan.link_multiplexing = True
-
 # Create a dedicated network for the RAMCloud machines.
-if (params.install_dpdk == False):
-    rclan = request.LAN("rclan")
-    if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
-        rclan.best_effort = True
-        rclan.vlan_tagging = False
-        rclan.link_multiplexing = True
+rclan = request.LAN("rclan")
+if (params.hardware_type == "m510" or params.hardware_type == "xl170"):
+    rclan.best_effort = True
+    rclan.vlan_tagging = False
+    rclan.link_multiplexing = True
 
 # Create a special network for connecting datasets to rcnfs.
-if (params.install_dpdk == False):
-    dslan = request.LAN("dslan")
-    dslan.best_effort = True
-    dslan.vlan_tagging = True
-    dslan.link_multiplexing = True
+dslan = request.LAN("dslan")
+dslan.best_effort = True
+dslan.vlan_tagging = True
+dslan.link_multiplexing = True
 
 # Create array of the requested datasets
 dataset_urns = []
@@ -175,9 +163,8 @@ for host in hostnames:
         rcxx_backup_dir, params.username, params.install_software,
         params.num_rcnodes, params.hardware_type, params.install_dpdk)))
 
-    # All nodes in the cluster connect to clan.
-    clan_iface = node.addInterface("clan_iface")
-    clan.addInterface(clan_iface)
+    rclan_iface = node.addInterface("rclan_iface")
+    rclan.addInterface(rclan_iface)
 
     # Stuff for NFS server.
     if host == "rcnfs":
@@ -201,11 +188,6 @@ for host in hostnames:
             backup_bs.size = "400GB"
         else:
             backup_bs.size = "200GB"
-        # Add rc machine to the rclan.
-        if (params.install_dpdk == False):
-            rclan_iface = node.addInterface("rclan_iface")
-            rclan_iface.bandwidth = 10000000
-            rclan.addInterface(rclan_iface)
 
 # Generate the RSpec
 pc.printRequestRSpec(request)
