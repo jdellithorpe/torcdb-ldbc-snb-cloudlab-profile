@@ -22,6 +22,7 @@ git clone https://github.com/jdellithorpe/RAMCloudUtils.git
 git clone https://github.com/jdellithorpe/rcperf.git
 git clone https://github.com/apache/tinkerpop.git
 git clone https://github.com/jdellithorpe/config.git
+git clone https://github.com/jdellithorpe/torcdb-cloudlab-scripts.git
 
 # Compile and configure RAMCloud
 echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
