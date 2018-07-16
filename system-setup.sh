@@ -30,6 +30,15 @@ HARDWARE_TYPE=$7
 # Whether or not to install DPDK on the machine
 INSTALL_DPDK=$8
 
+echo "RCNFS_SHAREDHOME_EXPORT_DIR: $RCNFS_SHAREDHOME_EXPORT_DIR" >> /local/parameters.cfg
+echo "RCNFS_DATASETS_EXPORT_DIR: $RCNFS_DATASETS_EXPORT_DIR" >> /local/parameters.cfg
+echo "RCXX_BACKUP_DIR: $RCXX_BACKUP_DIR" >> /local/parameters.cfg
+echo "USERNAME: $USERNAME" >> /local/parameters.cfg
+echo "INSTALL_SOFTWARE: $INSTALL_SOFTWARE" >> /local/parameters.cfg
+echo "NUM_RCNODES: $NUM_RCNODES" >> /local/parameters.cfg
+echo "HARDWARE_TYPE: $HARDWARE_TYPE" >> /local/parameters.cfg
+echo "INSTALL_DPDK: $INSTALL_DPDK" >> /local/parameters.cfg
+
 # === Paarameters decided by this script. ===
 # Directory where the NFS partition will be mounted on NFS clients
 SHAREDHOME_DIR=/shome
