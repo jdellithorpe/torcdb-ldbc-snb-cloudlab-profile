@@ -188,6 +188,9 @@ for host in hostnames:
             backup_bs.size = "400GB"
         else:
             backup_bs.size = "200GB"
+        # Add this node to the dataset blockstore LAN.
+        if (len(dataset_urns) > 0):
+            dslan.addInterface(node.addInterface("if2"))
 
 # Generate the RSpec
 pc.printRequestRSpec(request)
