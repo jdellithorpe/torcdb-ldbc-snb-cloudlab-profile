@@ -214,19 +214,19 @@ done
 
 # NFS clients setup (all servers are NFS clients).
 echo -e "\n===== SETTING UP NFS CLIENT ====="
-rcnfs_rclan_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
-my_rclan_ip=`grep "$(hostname --short)-rclan" /etc/hosts | cut -d$'\t' -f1`
+#rcnfs_rclan_ip=`grep "rcnfs-rclan" /etc/hosts | cut -d$'\t' -f1`
+#my_rclan_ip=`grep "$(hostname --short)-rclan" /etc/hosts | cut -d$'\t' -f1`
 #mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
 #echo "$rcnfs_rclan_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
-mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
-echo "$rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
+#mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
+#echo "$rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
 
 rcnfs_ctrl_ip=`ssh rcnfs "hostname -i"` 
 my_ctrl_ip=`hostname -i` 
 mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
 echo "$rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
-#mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
-#echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
+mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
+echo "$rcnfs_ctrl_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
 
 # Change default shell to bash for all users on all machines
 echo -e "\n===== CHANGE USERS SHELL TO BASH ====="
