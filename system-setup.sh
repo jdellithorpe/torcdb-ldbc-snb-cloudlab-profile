@@ -96,6 +96,9 @@ apt-get --assume-yes install mosh vim tmux pdsh tree axel htop ctags cscope cmak
 # NFS
 echo -e "\n===== INSTALLING NFS PACKAGES ====="
 apt-get --assume-yes install nfs-kernel-server nfs-common
+# Maven
+echo -e "\n===== INSTALLING MAVEN PACKAGES ====="
+apt-get --assume-yes install maven
 
 if [ "$INSTALL_SOFTWARE" == "True" ]
 then
@@ -114,16 +117,6 @@ then
     apt-get --assume-yes install default-jre
   fi
 
-  # Maven
-  echo -e "\n===== INSTALLING MAVEN ====="
-  wget http://www-us.apache.org/dist/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz
-  tar -xvzf apache-maven-3.5.2-bin.tar.gz
-  mv apache-maven-3.5.2 /usr/lib
-
-  cat >> /etc/profile.d/maven.sh <<EOM
-export PATH=/usr/lib/apache-maven-3.5.2/bin:$PATH
-EOM
-  chmod ugo+x /etc/profile.d/maven.sh
   echo -e "\n===== INSTALLING VARIOUS OTHER SOFTWARE ====="
   # cpupower, hugepages, msr-tools (for rdmsr), i7z
   apt-get --assume-yes install linux-tools-common linux-tools-${KERNEL_RELEASE} \
