@@ -27,9 +27,9 @@ git clone https://github.com/jdellithorpe/torcdb-cloudlab-scripts.git
 # Compile and configure RAMCloud
 echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
 cd RAMCloud
+git checkout rdwr-nanologging
 git submodule update --init --recursive
-ln -s ../../hooks/pre-commit .git/hooks/pre-commit
-git checkout jni-updates
+#ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 
 # Build DPDK libraries
 if [ "$INSTALL_DPDK" == "True" ]; then
@@ -84,7 +84,7 @@ cat >> $HOME/.bashrc <<EOM
 
 export RAMCLOUD_HOME=$HOME/RAMCloud
 
-export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.jni-updates
+export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.rdwr-nanologging
 EOM
 
 cd bindings/java
