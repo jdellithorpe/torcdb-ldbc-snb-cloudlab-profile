@@ -163,3 +163,11 @@ cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-c
 echo -e "\n===== SETUP USER CONFIG SETTINGS ====="
 cd $HOME/config
 ./cloudlab/setup.sh
+
+# Create cscope database *.out files for c++ source files, but also generate
+# file list for java files
+echo -e "\n===== CREATE CSCOPE DB FILES FOR C++ SOURCES ====="
+cd $HOME
+find -type l -prune -o -regex '.*\.\(cc\|h\)' -exec readlink -f {} \; > cscope.c.files
+find -type l -prune -o -regex '.*\.\(java\)' -exec readlink -f {} \; > cscope.java.files
+cscope -b -i cscope.c.files
