@@ -83,6 +83,7 @@ make -j8
 cat >> $HOME/.bashrc <<EOM
 
 export RAMCLOUD_HOME=$HOME/RAMCloud
+export NEO4J_HOME=/local/neo4j-enterprise-3.5.3
 
 export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.rdwr-nanologging
 EOM
