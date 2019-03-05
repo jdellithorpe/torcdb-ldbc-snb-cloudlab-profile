@@ -23,6 +23,7 @@ git clone https://github.com/jdellithorpe/rcperf.git
 git clone https://github.com/apache/tinkerpop.git
 git clone https://github.com/jdellithorpe/config.git
 git clone https://github.com/jdellithorpe/torcdb-cloudlab-scripts.git
+git clone https://github.com/jdellithorpe/torcdb-ldbc-snb-cloudlab-profile.git
 
 # Compile and configure RAMCloud
 echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
@@ -83,7 +84,7 @@ make -j8
 cat >> $HOME/.bashrc <<EOM
 
 export RAMCLOUD_HOME=$HOME/RAMCloud
-export NEO4J_HOME=/local/neo4j-enterprise-3.5.3
+export NEO4J_HOME=/local/rcbackup/neo4j-enterprise-3.5.3
 
 export LD_LIBRARY_PATH=\${RAMCLOUD_HOME}/obj.rdwr-nanologging
 EOM
