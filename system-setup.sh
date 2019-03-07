@@ -113,7 +113,7 @@ else
   # All other nodes just report to rcmaster
   DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install ganglia-monitor
   sed "s/host = .*/host = $(ssh rcmaster hostname -i)/g" /local/repository/ganglia.conf/gmond.conf > /etc/ganglia/gmond.conf
-  sudo service ganglia-monitor restart
+  service ganglia-monitor restart
 fi
 
 if [ "$INSTALL_SOFTWARE" == "True" ]
