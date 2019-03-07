@@ -99,6 +99,22 @@ apt-get --assume-yes install nfs-kernel-server nfs-common
 # Maven
 echo -e "\n===== INSTALLING MAVEN PACKAGES ====="
 apt-get --assume-yes install maven
+# Ganglia
+echo -e "\n===== INSTALLING GANGLIA PACKAGES ====="
+if [ $(hostname --short) == "rcmaster" ]
+then
+  # rcmaster is the master node that collects data and acts as web frontend
+  DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install ganglia-monitor rrdtool gmetad ganglia-webfrontend
+  cp /etc/ganglia-webfrontend/apache.conf /etc/apache2/sites-enabled/ganglia.conf
+  cp /local/repository/ganglia.conf/gmetad.conf /etc/ganglia/gmetad.conf
+  cp /local/repository/ganglia.conf/gmond.master.conf /etc/ganglia/gmond.conf
+  service ganglia-monitor restart && sudo service gmetad restart && sudo service apache2 restart
+else
+  # All other nodes just report to rcmaster
+  DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install ganglia-monitor
+  sed "s/host = .*/host = $(ssh rcmaster hostname -i)/g" /local/repository/ganglia.conf/gmond.conf > /etc/ganglia/gmond.conf
+  sudo service ganglia-monitor restart
+fi
 
 if [ "$INSTALL_SOFTWARE" == "True" ]
 then
