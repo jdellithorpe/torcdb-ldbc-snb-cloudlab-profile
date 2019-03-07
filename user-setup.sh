@@ -28,7 +28,7 @@ git clone https://github.com/jdellithorpe/torcdb-ldbc-snb-cloudlab-profile.git
 # Compile and configure RAMCloud
 echo -e "\n===== COMPILE AND CONFIGURE RAMCLOUD ====="
 cd RAMCloud
-git checkout rdwr-nanologging
+git checkout torcdb-experiments
 git submodule update --init --recursive
 #ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 
@@ -132,12 +132,12 @@ done
 # Build TorcDB
 echo -e "\n===== BUILD TORCDB ====="
 cd $HOME/TorcDB
-#git checkout ldbc-snb-optimized
 mvn install -DskipTests
 
 # Build the LDBC SNB driver
 echo -e "\n===== BUILD LDBC SNB DRIVER ====="
 cd $HOME/ldbc_snb_driver
+get checkout torcdb-no-gremlin
 mvn install -DskipTests
 
 # Configure the LDBC SNB driver
