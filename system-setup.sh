@@ -112,10 +112,6 @@ then
 else
   # All other nodes just report to rcmaster
   DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install ganglia-monitor
-  # Wait for rcmaster to come up so we can get its ip address
-  while [ "$(ssh rcmaster "echo 1")" != "1" ]; do
-    sleep 1
-  done
   sed "s/host = .*/host = $(ssh rcmaster hostname -i)/g" /local/repository/ganglia.conf/gmond.conf > /etc/ganglia/gmond.conf
   service ganglia-monitor restart
 fi
