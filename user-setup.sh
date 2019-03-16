@@ -17,7 +17,6 @@ git clone https://github.com/jdellithorpe/RAMCloud.git
 git clone https://github.com/PlatformLab/TorcDB.git
 git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
-git clone https://github.com/PlatformLab/ldbc-snb-impls.git ldbc-snb-impls-neo4j-testing
 git clone https://github.com/jdellithorpe/ldbc-snb-tools.git
 git clone https://github.com/jdellithorpe/RAMCloudUtils.git
 git clone https://github.com/jdellithorpe/rcperf.git
@@ -150,6 +149,24 @@ get checkout torcdb-no-gremlin
 mvn install -DskipTests
 cd snb-interactive-torc
 mvn compile assembly:single
+
+cd $HOME/ldbc-snb-impls
+cp $HOME/torcdb-cloudlab-scripts/run-query-tester.sh ./snb-interactive-tools
+cp $HOME/torcdb-cloudlab-scripts/collect-query-results.sh ./snb-interactive-tools
+cp $HOME/torcdb-cloudlab-scripts/parse-neo4j-run-query-tester-output.awk ./snb-interactive-tools
+cp $HOME/torcdb-cloudlab-scripts/parse-torcdb-run-query-tester-output.awk ./snb-interactive-tools
+cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0001
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" snb-interactive-tools-neo4j-sf0001/run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" snb-interactive-tools-neo4j-sf0001/collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0001/config/querytester.properties
+cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0010
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" snb-interactive-tools-neo4j-sf0010/run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" snb-interactive-tools-neo4j-sf0010/collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0010/config/querytester.properties
+cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0100
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" snb-interactive-tools-neo4j-sf0100/run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" snb-interactive-tools-neo4j-sf0100/collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0100/config/querytester.properties
 
 # Build the gremlin-console for TinkerPop
 echo -e "\n===== BUILD GREMLIN CONSOLE ====="
