@@ -83,6 +83,17 @@ then
     hugeadm --create-mounts --thp-never
   fi
 
+  # Setup ganglia on client nodes
+  if [ $(hostname --short) != "rcmaster" ]
+  then
+    sed "s/host = .*/host = $(ssh rcmaster hostname -i)/g" /local/repository/ganglia.conf/gmond.conf > /etc/ganglia/gmond.conf
+    service ganglia-monitor restart
+  fi
+
+  # Restart NTP service... Don't know why but NTP fails to open a listening
+  # socket the first time around... restarting it seems to work.
+  systemctl restart ntp.service
+  
   exit 0
 fi
 
@@ -112,8 +123,8 @@ then
 else
   # All other nodes just report to rcmaster
   DEBIAN_FRONTEND=noninteractive apt-get --assume-yes install ganglia-monitor
-  sed "s/host = .*/host = $(ssh rcmaster hostname -i)/g" /local/repository/ganglia.conf/gmond.conf > /etc/ganglia/gmond.conf
-  service ganglia-monitor restart
+  # We configure these nodes after a reboot to make sure we can get rcmaster's
+  # IP address
 fi
 
 if [ "$INSTALL_SOFTWARE" == "True" ]
