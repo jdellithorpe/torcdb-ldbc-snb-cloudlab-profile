@@ -138,7 +138,6 @@ mvn install -DskipTests
 # Build the LDBC SNB driver
 echo -e "\n===== BUILD LDBC SNB DRIVER ====="
 cd $HOME/ldbc_snb_driver
-get checkout torcdb-no-gremlin
 mvn install -DskipTests
 
 # Configure the LDBC SNB driver
@@ -147,6 +146,7 @@ cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver
 # Build the LDBC SNB implementation for TorcDB
 echo -e "\n===== BUILD LDBC SNB IMPLS ====="
 cd $HOME/ldbc-snb-impls
+get checkout torcdb-no-gremlin
 mvn install -DskipTests
 cd snb-interactive-torc
 mvn compile assembly:single
