@@ -155,18 +155,27 @@ cp $HOME/torcdb-cloudlab-scripts/run-query-tester.sh ./snb-interactive-tools
 cp $HOME/torcdb-cloudlab-scripts/collect-query-results.sh ./snb-interactive-tools
 cp $HOME/torcdb-cloudlab-scripts/parse-neo4j-run-query-tester-output.awk ./snb-interactive-tools
 cp $HOME/torcdb-cloudlab-scripts/parse-torcdb-run-query-tester-output.awk ./snb-interactive-tools
+cd snb-interactive-tools
+mvn compile -DskipTests
+cd ..
 cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0001
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" snb-interactive-tools-neo4j-sf0001/run-query-tester.sh
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" snb-interactive-tools-neo4j-sf0001/collect-query-results.sh
-sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0001/config/querytester.properties
+cd snb-interactive-tools-neo4j-sf0001
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0001\"/g" collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" config/querytester.properties
+cd ..
 cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0010
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" snb-interactive-tools-neo4j-sf0010/run-query-tester.sh
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" snb-interactive-tools-neo4j-sf0010/collect-query-results.sh
-sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0010/config/querytester.properties
+cd snb-interactive-tools-neo4j-sf0010
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0010\"/g" collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" config/querytester.properties
+cd ..
 cp -r snb-interactive-tools snb-interactive-tools-neo4j-sf0100
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" snb-interactive-tools-neo4j-sf0100/run-query-tester.sh
-sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" snb-interactive-tools-neo4j-sf0100/collect-query-results.sh
-sed -i "s/^db=.*/db=neo4j/g" snb-interactive-tools-neo4j-sf0100/config/querytester.properties
+cd snb-interactive-tools-neo4j-sf0100
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" run-query-tester.sh
+sed -i "s/^dataset=.*/dataset=\"ldbc_snb_sf0100\"/g" collect-query-results.sh
+sed -i "s/^db=.*/db=neo4j/g" config/querytester.properties
+cd ..
 
 # Build the gremlin-console for TinkerPop
 echo -e "\n===== BUILD GREMLIN CONSOLE ====="
