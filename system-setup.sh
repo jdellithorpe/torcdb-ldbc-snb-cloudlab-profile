@@ -241,7 +241,17 @@ echo -e "\n===== SETTING UP NFS CLIENT ====="
 #mkdir $DATASETS_DIR; mount -t nfs4 $rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR
 #echo "$rcnfs_rclan_ip:$RCNFS_DATASETS_EXPORT_DIR $DATASETS_DIR nfs4 rw,sync,hard,intr,addr=$my_rclan_ip 0 0" >> /etc/fstab
 
+# For whatever reason, some machines pass the above check on rcnfs but then get
+# here and rcnfs_ctrl_ip gets set to the empty string. Maybe sometimes we get
+# unlucky and attempt to execute this while rcnfs is restarting, or maybe the
+# network drops some packets, who knows. In any case, when we execute a command
+# that has a chance of failing we need to check for this and possibly retry.
 rcnfs_ctrl_ip=`ssh rcnfs "hostname -i"` 
+while [ -z "$rcnfs_ctrl_ip" ]; do 
+  sleep 1
+  rcnfs_ctrl_ip=`ssh rcnfs "hostname -i"` 
+done
+
 my_ctrl_ip=`hostname -i` 
 mkdir $SHAREDHOME_DIR; mount -t nfs4 $rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR
 echo "$rcnfs_ctrl_ip:$RCNFS_SHAREDHOME_EXPORT_DIR $SHAREDHOME_DIR nfs4 rw,sync,hard,intr,addr=$my_ctrl_ip 0 0" >> /etc/fstab
