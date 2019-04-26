@@ -62,7 +62,7 @@ hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)"),
                    ("xl170", "xl170") ]
 
 pc.defineParameter("image", "Disk Image",
-        portal.ParameterType.IMAGE, images[1], images,
+        portal.ParameterType.IMAGE, images[2], images,
         "Specify the base disk image that all the nodes of the cluster " +\
         "should be booted with.")
 
