@@ -53,7 +53,7 @@ pc = portal.Context()
 # dashboard.
 images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
            ("UBUNTU16-64-STD", "Ubuntu 16.04 Updated"),
-           ("urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU16-64-STD:46", "Ubuntu 16.04 Old") ]
+           ("urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU16-64-STD:45", "Ubuntu 16.04 Old") ]
 
 # The possible set of node-types this cluster can be configured with. Currently 
 # only m510 machines are supported.
