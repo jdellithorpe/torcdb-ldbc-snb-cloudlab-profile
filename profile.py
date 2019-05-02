@@ -51,9 +51,9 @@ pc = portal.Context()
 # The possible set of base disk-images that this cluster can be booted with.
 # The second field of every tupule is what is displayed on the cloudlab
 # dashboard.
-images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
-           ("UBUNTU16-64-STD", "Ubuntu 16.04 Updated"),
-           ("urn:publicid:IDN+emulab.net+image+emulab-ops//UBUNTU16-64-STD:45", "Ubuntu 16.04 Old") ]
+images = [ ("urn:publicid:IDN+emulab.net+image+RAMCloud:Ubuntu1604KernelRelease440142", "Ubuntu 16.04 Kernel Release 4.4.0-142"),
+           ("UBUNTU14-64-STD", "Ubuntu 14.04"),
+           ("UBUNTU16-64-STD", "Ubuntu 16.04 Updated") ]
 
 # The possible set of node-types this cluster can be configured with. Currently 
 # only m510 machines are supported.
@@ -62,7 +62,7 @@ hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)"),
                    ("xl170", "xl170") ]
 
 pc.defineParameter("image", "Disk Image",
-        portal.ParameterType.IMAGE, images[2], images,
+        portal.ParameterType.IMAGE, images[0], images,
         "Specify the base disk image that all the nodes of the cluster " +\
         "should be booted with.")
 
