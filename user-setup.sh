@@ -15,6 +15,7 @@ INSTALL_DPDK=$3
 echo -e "\n===== CLONING REPOSITORIES ====="
 git clone https://github.com/jdellithorpe/RAMCloud.git
 git clone https://github.com/PlatformLab/TorcDB.git
+git clone https://github.com/PlatformLab/TorcDB2.git
 git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 git clone https://github.com/jdellithorpe/ldbc-snb-tools.git
@@ -135,6 +136,11 @@ echo -e "\n===== BUILD TORCDB ====="
 cd $HOME/TorcDB
 mvn install -DskipTests
 
+# Build TorcDB2
+echo -e "\n===== BUILD TORCDB2 ====="
+cd $HOME/TorcDB2
+mvn install -DskipTests
+
 # Build the LDBC SNB driver
 echo -e "\n===== BUILD LDBC SNB DRIVER ====="
 cd $HOME/ldbc_snb_driver
@@ -146,10 +152,7 @@ cp -R /local/repository/ldbc_snb_driver.conf/configuration $HOME/ldbc_snb_driver
 # Build the LDBC SNB implementation for TorcDB
 echo -e "\n===== BUILD LDBC SNB IMPLS ====="
 cd $HOME/ldbc-snb-impls
-git checkout torcdb-no-gremlin
 mvn install -DskipTests
-cd snb-interactive-torc
-mvn compile assembly:single
 
 cd $HOME/ldbc-snb-impls
 cp $HOME/torcdb-cloudlab-scripts/run-query-tester.sh ./snb-interactive-tools
