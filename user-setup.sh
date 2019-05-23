@@ -195,6 +195,7 @@ cp snb-interactive-torc/scripts/ExampleGremlinSetup.sh $HOME/tinkerpop/gremlin-c
 # Configure the machine with my personal settings
 echo -e "\n===== SETUP USER CONFIG SETTINGS ====="
 cd $HOME/config
+git submodule update --init --recursive
 ./cloudlab/setup.sh
 
 # Create cscope database *.out files for c++ source files, but also generate

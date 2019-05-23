@@ -51,8 +51,9 @@ pc = portal.Context()
 # The possible set of base disk-images that this cluster can be booted with.
 # The second field of every tupule is what is displayed on the cloudlab
 # dashboard.
-images = [ ("UBUNTU14-64-STD", "Ubuntu 14.04"),
-           ("UBUNTU16-64-STD", "Ubuntu 16.04") ]
+images = [ ("urn:publicid:IDN+emulab.net+image+RAMCloud:Ubuntu1604KernelRelease440142", "Ubuntu 16.04 Kernel Release 4.4.0-142"),
+           ("UBUNTU14-64-STD", "Ubuntu 14.04"),
+           ("UBUNTU16-64-STD", "Ubuntu 16.04 Updated") ]
 
 # The possible set of node-types this cluster can be configured with. Currently 
 # only m510 machines are supported.
@@ -61,7 +62,7 @@ hardware_types = [ ("m510", "m510 (CloudLab Utah, Intel Xeon-D)"),
                    ("xl170", "xl170") ]
 
 pc.defineParameter("image", "Disk Image",
-        portal.ParameterType.IMAGE, images[1], images,
+        portal.ParameterType.IMAGE, images[0], images,
         "Specify the base disk image that all the nodes of the cluster " +\
         "should be booted with.")
 
@@ -150,7 +151,10 @@ rcxx_backup_dir = "/local/rcbackup"
 for host in hostnames:
     node = request.RawPC(host)
     node.hardware_type = params.hardware_type
-    node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
+    if (params.image.startswith("urn:")):
+        node.disk_image = params.image
+    else:
+        node.disk_image = urn.Image(cloudlab.Utah, "emulab-ops:%s" % params.image)
 
     # Root keys are not installed by default on d430 machines.
     if (params.hardware_type == "d430"):
