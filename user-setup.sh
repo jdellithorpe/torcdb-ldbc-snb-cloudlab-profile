@@ -15,7 +15,7 @@ INSTALL_DPDK=$3
 echo -e "\n===== CLONING REPOSITORIES ====="
 git clone https://github.com/jdellithorpe/RAMCloud.git
 git clone https://github.com/PlatformLab/TorcDB.git
-git clone https://github.com/PlatformLab/TorcDB2.git
+git clone https://github.com/jdellithorpe/TorcDB2.git
 git clone https://github.com/ldbc/ldbc_snb_driver.git
 git clone https://github.com/PlatformLab/ldbc-snb-impls.git
 git clone https://github.com/jdellithorpe/ldbc-snb-tools.git
