@@ -110,6 +110,9 @@ apt-get --assume-yes install nfs-kernel-server nfs-common
 # Maven
 echo -e "\n===== INSTALLING MAVEN PACKAGES ====="
 apt-get --assume-yes install maven
+# Python packages
+echo -e "\n===== INSTALLING PYTHON PACKAGES ====="
+apt-get --assume-yes install python-numpy python-pandas python-matplotlib
 # Ganglia
 echo -e "\n===== INSTALLING GANGLIA PACKAGES ====="
 if [ $(hostname --short) == "rcmaster" ]
